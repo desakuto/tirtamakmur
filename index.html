@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PAMSIMAS Tirta Makmur</title>
+
+  <!-- PWA meta -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#3b6a7e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="PAMSIMAS Tirta Makmur">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f7faff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #222;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 12px;
+      color: #333;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      background: #3b6a7e;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { filter: brightness(0.95); }
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 10px;
+      color: #3b6a7e;
+      font-weight: 500;
+    }
+    .loading.show {
+      display: block;
+    }
+    #installBtn {
+      display:none;
+      margin-top:10px;
+      background:#06b6d4;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Form Pembacaan Meter - PAMSIMAS Tirta Makmur</h2>
+
+    <label>Tanggal Input</label>
+    <input type="text" id="tanggal_input" readonly />
+
+    <label>ID Pelanggan</label>
+    <input type="number" id="id_pelanggan" placeholder="Masukkan ID" oninput="getDataPelanggan()" />
+
+    <label>Nama</label>
+    <input type="text" id="nama" readonly />
+
+    <label>Alamat</label>
+    <input type="text" id="alamat" readonly />
+
+    <label>Beban Wajib (Rp)</label>
+    <input type="number" id="beban_wajib" readonly />
+
+    <label>Denda (Rp)</label>
+    <input type="number" id="denda" readonly />
+
+    <label>Meter Awal</label>
+    <input type="number" id="meter_awal" readonly />
+
+    <label>Meter Akhir</label>
+    <input type="number" id="meter_akhir" oninput="hitungJumlahMeter()" />
+
+    <label>Jumlah Meter (m³)</label>
+    <input type="number" id="jumlah_meter" readonly />
+
+    <label>Biaya Meter (Rp)</label>
+    <input type="number" id="biaya_meter" readonly />
+
+    <label>Jumlah Bayar (Rp)</label>
+    <input type="number" id="jumlah_bayar" readonly />
+
+    <label>Pelunasan</label>
+    <select id="pelunasan">
+      <option value="Belum">Belum</option>
+      <option value="Sudah">Sudah</option>
+    </select>
+
+    <label>Upload Foto Meteran</label>
+    <input type="file" id="foto_meteran" accept="image/*" capture="environment" />
+
+    <button id="btnKirim" onclick="kirimData()">KIRIM</button>
+    <button id="installBtn">Pasang Aplikasi</button>
+    <div class="loading" id="loadingText">⏳ Sedang mengirim data...</div>
+  </div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxdYLEOpfyr6HtiCpWE442qATJbusuY9VXd1N1EMkB-exragMqnSEjhYV7UD-sDX012Ng/exec";
+
+    document.getElementById("tanggal_input").value = new Date().toLocaleDateString("id-ID");
+
+    async function getDataPelanggan() {
+      const id = document.getElementById("id_pelanggan").value;
+      if (!id) return;
+      try {
+        const res = await fetch(`${scriptURL}?id=${encodeURIComponent(id)}`);
+        const data = await res.json();
+        if (data.status === "ok") {
+          document.getElementById("nama").value = data.nama;
+          document.getElementById("alamat").value = data.alamat;
+          document.getElementById("beban_wajib").value = data.beban_wajib;
+          document.getElementById("meter_awal").value = data.meter_awal;
+          document.getElementById("denda").value = data.denda;
+        } else {
+          alert("❌ Data pelanggan tidak ditemukan!");
+        }
+      } catch(err) {
+        console.warn('Gagal ambil data pelanggan', err);
+        alert('⚠️ Tidak dapat menghubungi server. Mungkin offline.');
+      }
+    }
+
+    function hitungJumlahMeter() {
+      const awal = Number(document.getElementById("meter_awal").value) || 0;
+      const akhir = Number(document.getElementById("meter_akhir").value) || 0;
+      const beban = Number(document.getElementById("beban_wajib").value) || 0;
+      const denda = Number(document.getElementById("denda").value) || 0;
+
+      const jumlah = akhir - awal;
+      const biaya = jumlah * 2000;
+      const total = biaya + beban + denda;
+
+      document.getElementById("jumlah_meter").value = jumlah > 0 ? jumlah : 0;
+      document.getElementById("biaya_meter").value = biaya;
+      document.getElementById("jumlah_bayar").value = total;
+    }
+
+    async function kirimData() {
+      const btn = document.getElementById("btnKirim");
+      const loading = document.getElementById("loadingText");
+      btn.disabled = true;
+      loading.classList.add("show");
+
+      try {
+        const fileInput = document.getElementById("foto_meteran").files[0];
+        let base64File = "";
+        let fileName = "";
+
+        if (fileInput) {
+          fileName = fileInput.name;
+          base64File = await toBase64(fileInput);
+        }
+
+        const data = {
+          tanggal_input: document.getElementById("tanggal_input").value,
+          id: document.getElementById("id_pelanggan").value,
+          beban_wajib: document.getElementById("beban_wajib").value,
+          denda: document.getElementById("denda").value,
+          meter_awal: document.getElementById("meter_awal").value,
+          meter_akhir: document.getElementById("meter_akhir").value,
+          jumlah_meter: document.getElementById("jumlah_meter").value,
+          biaya: document.getElementById("biaya_meter").value,
+          jumlah_bayar: document.getElementById("jumlah_bayar").value,
+          pelunasan: document.getElementById("pelunasan").value,
+          filename: fileName,
+          file: base64File.split(",")[1] || ""
+        };
+
+        const formBody = new URLSearchParams(data);
+        const res = await fetch(scriptURL, { method: "POST", body: formBody });
+        const result = await res.json();
+
+        if (result.status === "ok") {
+          alert("✅ Data berhasil dikirim!");
+          location.reload();
+        } else {
+          alert("❌ Gagal mengirim data!");
+        }
+      } catch (err) {
+        console.warn(err);
+        alert("⚠️ Terjadi kesalahan koneksi! Data mungkin bisa dikirim saat online.");
+      } finally {
+        btn.disabled = false;
+        loading.classList.remove("show");
+      }
+    }
+
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+    }
+
+    // PWA: register service worker dan handling install prompt
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => {
+          console.log('Service Worker terdaftar:', reg.scope);
+        })
+        .catch(err => console.warn('Service Worker gagal:', err));
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'block';
+      installBtn.addEventListener('click', async () => {
+        installBtn.style.display = 'none';
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        console.log('userChoice', choice);
+        deferredPrompt = null;
+      });
+    });
+
+    window.addEventListener('appinstalled', () => {
+      console.log('Aplikasi terpasang.');
+    });
+  </script>
+</body>
+</html>
