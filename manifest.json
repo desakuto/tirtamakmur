@@ -1,23 +1,20 @@
 {
   "name": "PAMSIMAS Tirta Makmur",
   "short_name": "PAMSIMAS",
-  "description": "Form Pembacaan Meter - PAMSIMAS Tirta Makmur",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
-  "orientation": "portrait",
-  "scope": "./",
-  "background_color": "#3b6a7e",
-  "theme_color": "#3b6a7e",
+  "background_color": "#ffffff",
+  "theme_color": "#55A630",
   "icons": [
     {
       "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "192x192"
     },
     {
       "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ]
 }
