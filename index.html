@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PAMSIMAS Tirta Makmur</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png"><link rel="icon" href="icons/icon-192.png">
 
   <style>
     body {
@@ -94,6 +96,7 @@
       text-align: center;
     }
 
+    /* 🖨️ Header dengan Logo */
     .print-header {
      text-align: center;
      border-bottom: 1px dashed black;
@@ -102,7 +105,7 @@
    }
 
     .print-header img.logo-pamsimas {
-     width: 120px;       
+     width: 120px;        /* 🔹 Ukuran logo lebih besar */
      height: auto;
      display: block;
      margin: 0 auto 6px;
@@ -115,12 +118,12 @@
     color: black;
   }
    #btnLogout {
-  background: #d92c2c !important; 
+  background: #d92c2c !important; /* merah */
   color: white;
-  padding: 8px 12px; 
+  padding: 8px 12px; /* lebih mepet */
   font-size: 14px;
-  width: auto; 
-  margin: 15px auto 0; 
+  width: auto; /* tidak full lebar */
+  margin: 15px auto 0; /* berada di tengah */
   display: block;
   border-radius: 6px;
   cursor: pointer;
@@ -130,6 +133,8 @@
   background: #c02424 !important;
   }
 
+
+    /* 🖨️ Tampilan Struk Cetak */
     @media print {
       @page { size: auto; margin: 5mm; }
       body, .container {
@@ -141,7 +146,7 @@
         color: black !important;
         background: white !important;
       }
-
+      /* ❌ Sembunyikan tombol & upload saat cetak */
       button, #installBtn, #foto_meteran, label[for="foto_meteran"] {
         display: none !important;
       }
@@ -249,6 +254,7 @@
     <button id="btnPrint" onclick="printPage()">🖨️ CETAK</button>
     <button id="installBtn">Pasang Aplikasi</button>
     <button id="btnLogout" onclick="logout()">LOGOUT</button>
+    <button id="installBtn" style="display:none; background:#06b6d4; margin-top:10px;"> 📲 Pasang Aplikasi
 
     <div class="print-footer">
       <p>----------------------------------------</p>
@@ -260,7 +266,7 @@
 <div class="loading" id="loadingText">⏳ Sedang mengirim data...</div>
   
 <script>
- 
+    // 🔐 Cek Login
     if (localStorage.getItem("logged_in") !== "true") {
     window.location.href = "login.html";
    }
@@ -280,7 +286,7 @@ function checkAutoLogout() {
   const elapsed = now - Number(loginTime);
 
   if (elapsed > maxInactiveTime) {
-    logout(); 
+    logout(); // Hapus session login
   }
 }
 
@@ -426,7 +432,7 @@ async function kirimData() {
 
     if (result.status === "ok") {
       alert("✅ Data berhasil dikirim!\nTombol CETAK sudah aktif.");
-    
+      // Aktifkan tombol cetak setelah data berhasil dikirim
       const btnPrint = document.getElementById("btnPrint");
       btnPrint.disabled = false;
       btnPrint.style.opacity = "1";
@@ -442,7 +448,6 @@ async function kirimData() {
     loading.classList.remove("show");
   }
 }
-
     function toBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -456,8 +461,6 @@ async function kirimData() {
   localStorage.removeItem("login_time");
   window.location.href = "login.html";
 }
-
-
    function printPage() {
   const btnPrint = document.getElementById("btnPrint");
   // Cegah jika belum diaktifkan oleh kirimData()
@@ -465,12 +468,10 @@ async function kirimData() {
     alert("⚠️ KIRIM DATA TERLEBIH DAHULU\nSilakan tekan tombol 'KIRIM' sebelum mencetak.");
     return;
   }
-
-
+  // Sembunyikan tombol saat cetak
   document.getElementById("btnKirim").style.display = "none";
   document.getElementById("installBtn").style.display = "none";
   document.getElementById("btnPrint").style.display = "none";
-  
   window.print();
 
   // Reload otomatis setelah cetak selesai
@@ -478,13 +479,30 @@ async function kirimData() {
     location.reload();
   }, 1000);
 }
+let deferredPrompt;
+const installBtn = document.getElementById("installBtn");
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = "block"; // ✅ Tombol muncul di HP
+  console.log("✅ PWA install prompt ready");
+});
+
+installBtn.addEventListener("click", async () => {
+  installBtn.style.display = "none";
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log("Install response:", outcome);
+  deferredPrompt = null;
+});
 
 
+    // PWA
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(reg => console.log('Service Worker terdaftar:', reg.scope))
-        .catch(err => console.warn('Service Worker gagal:', err));
-    }
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(() => console.log("✅ Service Worker aktif"));
+}
   </script>
 </body>
 </html>
