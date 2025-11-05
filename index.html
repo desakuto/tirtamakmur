@@ -9,29 +9,26 @@
 
   <style>
     body {
-      font-family: "Segoe UI", sans-serif;
-      background: #f7faff;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .container {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 480px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    h2 { text-align: center; margin-bottom: 15px; color: #222; }
-    label { font-weight: 600; display: block; margin-top: 12px; color: #333; }
-    input, select {
-      width: 100%; padding: 10px; border: 1px solid #ccc;
-      border-radius: 6px; font-size: 15px; margin-top: 5px;
-      box-sizing: border-box;
-    }
+      body {
+  font-family: "Segoe UI", sans-serif;
+  background: #f7faff;
+  margin: 0;
+  padding: 10px;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 0 auto;
+  box-shadow: 0 2px 7px rgba(0,0,0,0.08);
+}
+
+h2, label {
+  font-size: 14px;
+}
     button {
       width: 100%;
       background: #55A630;
@@ -158,22 +155,44 @@
   .print-view {
     display: block !important; /* ✅ Hanya muncul saat print */
   }
+ .print-header {
+    display: block !important;
+  }
+
+  label {
+    display: none !important;
+  }
+
+  * {
+    font-family: monospace !important;
+    font-size: 11px !important;
+    line-height: 1.1 !important;
+  }
+
+  .container, body {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 58mm !important;
+  }
 }
 
       /* 📱 Thermal Printer 57mm */
-      @media (max-width: 480px) {
-        @page { size: 57mm 40mm; margin: 2mm; }
-        body { font-size: 10px !important; }
-        .container { max-width: 57mm; padding: 4px; }
-        label { font-size: 10px !important; margin-top: 4px; }
-        #jumlah_bayar { font-size: 14px !important; }
-      }
-
-      /* 💻 PC (A4) */
-      @media (min-width: 481px) {
-        @page { size: A4; margin: 15mm; }
-      }
-    }
+    @media (max-width: 360px) {
+  body {
+    padding: 5px;
+  }
+  .container {
+    padding: 10px;
+  }
+  input, select {
+    height: 34px;
+    font-size: 13px;
+  }
+  button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
   </style>
 </head>
 
