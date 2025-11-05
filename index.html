@@ -68,8 +68,6 @@
     display: flex;
   }
 
-    #installBtn { display:none; margin-top:10px; background:#06b6d4; }
-
     #nama { color: #3137fd; font-weight: 700; }
     input::placeholder { font-style: italic; }
 
@@ -134,31 +132,35 @@
   }
 
 
-    /* 🖨️ Tampilan Struk Cetak */
-  
+/* ✅ Print Thermal Mode */
 @media print {
 
-  * {
-    font-family: monospace !important; /* ✅ Font A */
-    font-size: 11px !important;
-    line-height: 1.1 !important; /* ✅ Jarak mepet */
-  }
-
-  .container, body {
-    padding: 0 !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-    width: 58mm !important; /* ✅ Ukuran struk thermal */
-  }
-
+  /* Semua tampilan normal disembunyikan */
   input, select, button, label, #info_tarif, #foto_meteran {
     display: none !important;
   }
 
-  .print-view {
-    display: block !important; /* ✅ Hanya muncul saat print */
+  /* ✅ Tampilkan hanya area struk */
+  .print-view,
+  .print-header {
+    display: block !important;
+  }
+
+  /* ✅ Style untuk thermal printer 58mm */
+  body, .container {
+    width: 58mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  * {
+    font-family: monospace !important;
+    font-size: 11px !important;
+    line-height: 1.1 !important;
   }
 }
+
 /* ✅ Tampilan Mobile */
 @media (max-width: 480px) {
   body {
@@ -520,41 +522,42 @@ async function kirimData() {
   localStorage.removeItem("login_time");
   window.location.href = "login.html";
 }
-   function printPage() {
+  function printPage() {
   const btnPrint = document.getElementById("btnPrint");
-
   if (btnPrint.disabled) {
-    alert("⚠️ KIRIM DATA TERLEBIH DAHULU\nSilakan tekan tombol 'KIRIM' sebelum mencetak.");
+    alert("⚠️ KIRIM DATA TERLEBIH DAHULU");
     return;
   }
 
-  // ✅ Isi data struk dulu
-  document.getElementById("cetak_tanggal").innerText = document.getElementById("tanggal_input").value;
-  document.getElementById("cetak_id").innerText = document.getElementById("id_pelanggan").value;
-  document.getElementById("cetak_nama").innerText = document.getElementById("nama").value;
-  document.getElementById("cetak_alamat").innerText = document.getElementById("alamat").value;
-  document.getElementById("cetak_awal").innerText = document.getElementById("meter_awal").value;
-  document.getElementById("cetak_akhir").innerText = document.getElementById("meter_akhir").value;
-  document.getElementById("cetak_meter").innerText = document.getElementById("jumlah_meter").value;
-  document.getElementById("cetak_biaya").innerText = document.getElementById("biaya_meter").value;
-  document.getElementById("cetak_beban").innerText = document.getElementById("beban_wajib").value;
-  document.getElementById("cetak_denda").innerText = document.getElementById("denda").value;
-  document.getElementById("cetak_total").innerText = document.getElementById("jumlah_bayar").value;
-  document.getElementById("cetak_pelunasan").innerText = document.getElementById("pelunasan").value;
+  // ✅ Isi data struk
+  [
+    ["cetak_tanggal","tanggal_input"],
+    ["cetak_id","id_pelanggan"],
+    ["cetak_nama","nama"],
+    ["cetak_alamat","alamat"],
+    ["cetak_awal","meter_awal"],
+    ["cetak_akhir","meter_akhir"],
+    ["cetak_meter","jumlah_meter"],
+    ["cetak_biaya","biaya_meter"],
+    ["cetak_beban","beban_wajib"],
+    ["cetak_denda","denda"],
+    ["cetak_total","jumlah_bayar"],
+    ["cetak_pelunasan","pelunasan"]
+  ].forEach(([cetak, input]) => {
+     document.getElementById(cetak).innerText =
+       document.getElementById(input).value;
+  });
 
-  // ✅ Sembunyikan tombol setelah data struk siap
-  document.getElementById("btnKirim").style.display = "none";
-  document.getElementById("installBtn").style.display = "none";
-  document.getElementById("btnPrint").style.display = "none";
+  // ✅ Tampilkan print-view dulu
+  document.querySelector(".print-view").style.display = "block";
 
-  // ✅ Delay kecil biar DOM sempat update sebelum print
+  // ✅ Paksa browser render dulu
   setTimeout(() => {
     window.print();
-
-    // Reload setelah cetak selesai
-    setTimeout(() => location.reload(), 500);
+    setTimeout(() => location.reload(), 700);
   }, 300);
 }
+
 
 let deferredPrompt;
 const installBtn = document.getElementById("installBtn");
