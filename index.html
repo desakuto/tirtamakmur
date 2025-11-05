@@ -132,21 +132,7 @@
   }
 
 
-/* ✅ Print Thermal Mode */
-@media print {
-
-  /* Semua tampilan normal disembunyikan */
-  input, select, button, label, #info_tarif, #foto_meteran {
-    display: none !important;
-  }
-
-  /* ✅ Tampilkan hanya area struk */
-  .print-view,
-  .print-header {
-    display: block !important;
-  }
-
-  /* ✅ Style untuk thermal printer 58mm */
+ /* ✅ Style untuk thermal printer 58mm */
   body, .container {
     width: 58mm !important;
     margin: 0 !important;
@@ -159,7 +145,6 @@
     font-size: 11px !important;
     line-height: 1.1 !important;
   }
-}
 
 /* ✅ Tampilan Mobile */
 @media (max-width: 480px) {
@@ -216,13 +201,47 @@
     width: 70px;
     margin-bottom: 3px;
   }
-}
 
       /* 💻 PC (A4) */
       @media (min-width: 481px) {
         @page { size: A4; margin: 15mm; }
       }
     }
+
+/* ✅ SEMUA STRUK DISSEMBUNYIKAN SAAT TAMPIL NORMAL */
+.print-view,
+.print-header {
+  display: none !important;
+}
+
+/* ✅ CETAK THERMAL 58mm */
+@media print {
+
+  /* Sembunyikan form input, tombol, foto */
+  input, select, button, #info_tarif, #foto_meteran {
+    display: none !important;
+  }
+
+  /* ✅ Tampilkan struk SAJA */
+  .print-view,
+  .print-header {
+    display: block !important;
+  }
+
+  body, .container {
+    width: 58mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  * {
+    font-family: monospace !important;
+    font-size: 11px !important;
+    line-height: 1.1 !important;
+  }
+}
+
   </style>
 </head>
 
@@ -529,35 +548,36 @@ async function kirimData() {
     return;
   }
 
-  // ✅ Isi data struk
-  [
-    ["cetak_tanggal","tanggal_input"],
-    ["cetak_id","id_pelanggan"],
-    ["cetak_nama","nama"],
-    ["cetak_alamat","alamat"],
-    ["cetak_awal","meter_awal"],
-    ["cetak_akhir","meter_akhir"],
-    ["cetak_meter","jumlah_meter"],
-    ["cetak_biaya","biaya_meter"],
-    ["cetak_beban","beban_wajib"],
-    ["cetak_denda","denda"],
-    ["cetak_total","jumlah_bayar"],
-    ["cetak_pelunasan","pelunasan"]
-  ].forEach(([cetak, input]) => {
-     document.getElementById(cetak).innerText =
-       document.getElementById(input).value;
+  // ✅ Transfer data ke struk
+  const map = [
+    ["cetak_tanggal", "tanggal_input"],
+    ["cetak_id", "id_pelanggan"],
+    ["cetak_nama", "nama"],
+    ["cetak_alamat", "alamat"],
+    ["cetak_awal", "meter_awal"],
+    ["cetak_akhir", "meter_akhir"],
+    ["cetak_meter", "jumlah_meter"],
+    ["cetak_biaya", "biaya_meter"],
+    ["cetak_beban", "beban_wajib"],
+    ["cetak_denda", "denda"],
+    ["cetak_total", "jumlah_bayar"],
+    ["cetak_pelunasan", "pelunasan"]
+  ];
+  map.forEach(([cetak, input]) => {
+    document.getElementById(cetak).innerText =
+      document.getElementById(input).value;
   });
 
-  // ✅ Tampilkan print-view dulu
+  // ✅ Tampilkan area cetak
   document.querySelector(".print-view").style.display = "block";
+  document.querySelector(".print-header").style.display = "block";
 
-  // ✅ Paksa browser render dulu
+  // ✅ Pastikan browser update tampilan DULU baru cetak
   setTimeout(() => {
     window.print();
     setTimeout(() => location.reload(), 700);
-  }, 300);
+  }, 500);
 }
-
 
 let deferredPrompt;
 const installBtn = document.getElementById("installBtn");
