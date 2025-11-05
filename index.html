@@ -9,26 +9,29 @@
 
   <style>
     body {
-      body {
-  font-family: "Segoe UI", sans-serif;
-  background: #f7faff;
-  margin: 0;
-  padding: 10px;
-}
-
-.container {
-  width: 100%;
-  max-width: 420px;
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  margin: 0 auto;
-  box-shadow: 0 2px 7px rgba(0,0,0,0.08);
-}
-
-h2, label {
-  font-size: 14px;
-}
+      font-family: "Segoe UI", sans-serif;
+      background: #f7faff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; margin-bottom: 15px; color: #222; }
+    label { font-weight: 600; display: block; margin-top: 12px; color: #333; }
+    input, select {
+      width: 100%; padding: 10px; border: 1px solid #ccc;
+      border-radius: 6px; font-size: 15px; margin-top: 5px;
+      box-sizing: border-box;
+    }
     button {
       width: 100%;
       background: #55A630;
@@ -155,44 +158,69 @@ h2, label {
   .print-view {
     display: block !important; /* ✅ Hanya muncul saat print */
   }
- .print-header {
-    display: block !important;
+}
+/* ✅ Tampilan Mobile */
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+    display: block;
+    background: #f4faff;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: none;
   }
 
   label {
-    display: none !important;
-  }
-
-  * {
-    font-family: monospace !important;
-    font-size: 11px !important;
-    line-height: 1.1 !important;
-  }
-
-  .container, body {
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 58mm !important;
-  }
-}
-
-      /* 📱 Thermal Printer 57mm */
-    @media (max-width: 360px) {
-  body {
-    padding: 5px;
-  }
-  .container {
-    padding: 10px;
-  }
-  input, select {
-    height: 34px;
     font-size: 13px;
+    margin-top: 8px;
   }
-  button {
+
+  input, select {
+    height: 38px;
     font-size: 14px;
+  }
+
+  .judul {
+    font-size: 18px;
+  }
+
+  #jumlah_bayar {
+    font-size: 22px;
+  }
+
+  button {
+    padding: 10px;
+    font-size: 15px;
+    margin-top: 10px;
+  }
+
+  #btnLogout {
+    width: 100%;
+    margin-top: 15px;
     padding: 10px;
   }
+
+  .print-header {
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+  }
+
+  .print-header img.logo-pamsimas {
+    width: 70px;
+    margin-bottom: 3px;
+  }
 }
+
+      /* 💻 PC (A4) */
+      @media (min-width: 481px) {
+        @page { size: A4; margin: 15mm; }
+      }
+    }
   </style>
 </head>
 
