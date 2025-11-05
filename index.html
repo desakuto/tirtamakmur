@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PAMSIMAS Tirta Makmur</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png"><link rel="icon" href="icons/icon-192.png">
+
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f7faff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; margin-bottom: 15px; color: #222; }
+    label { font-weight: 600; display: block; margin-top: 12px; color: #333; }
+    input, select {
+      width: 100%; padding: 10px; border: 1px solid #ccc;
+      border-radius: 6px; font-size: 15px; margin-top: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      background: #55A630;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { background: #4c952b; }
+
+    .loading {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #3b6a7e;
+    font-weight: 700;
+    text-align: center;
+  }
+
+   .loading.show {
+    display: flex;
+  }
+
+    #installBtn { display:none; margin-top:10px; background:#06b6d4; }
+
+    #nama { color: #3137fd; font-weight: 700; }
+    input::placeholder { font-style: italic; }
+
+    .judul {
+      font-weight: 700;
+      text-align: center;
+      font-size: 22px;
+      background: linear-gradient(120deg,#2196F3,#55A630,#9E9E9E,#2196F3);
+      background-size: 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s infinite linear;
+    }
+    @keyframes shimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #jumlah_bayar {
+      color: red;
+      font-size: 28px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    /* 🖨️ Header dengan Logo */
+    .print-header {
+     text-align: center;
+     border-bottom: 1px dashed black;
+     padding-bottom: 8px;
+     margin-bottom: 10px;
+   }
+
+    .print-header img.logo-pamsimas {
+     width: 120px;        /* 🔹 Ukuran logo lebih besar */
+     height: auto;
+     display: block;
+     margin: 0 auto 6px;
+  }
+
+   .print-header h3 {
+    font-size: 15px;
+    font-weight: 800;
+    margin: 0;
+    color: black;
+  }
+   #btnLogout {
+  background: #d92c2c !important; /* merah */
+  color: white;
+  padding: 8px 12px; /* lebih mepet */
+  font-size: 14px;
+  width: auto; /* tidak full lebar */
+  margin: 15px auto 0; /* berada di tengah */
+  display: block;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  }
+   #btnLogout:hover {
+  background: #c02424 !important;
+  }
+
+
+    /* 🖨️ Tampilan Struk Cetak */
+  
+@media print {
+
+  * {
+    font-family: monospace !important; /* ✅ Font A */
+    font-size: 11px !important;
+    line-height: 1.1 !important; /* ✅ Jarak mepet */
+  }
+
+  .container, body {
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    width: 58mm !important; /* ✅ Ukuran struk thermal */
+  }
+
+  input, select, button, label, #info_tarif, #foto_meteran {
+    display: none !important;
+  }
+
+  .print-view {
+    display: block !important; /* ✅ Hanya muncul saat print */
+  }
+}
+
+      /* 📱 Thermal Printer 57mm */
+      @media (max-width: 480px) {
+        @page { size: 57mm 40mm; margin: 2mm; }
+        body { font-size: 10px !important; }
+        .container { max-width: 57mm; padding: 4px; }
+        label { font-size: 10px !important; margin-top: 4px; }
+        #jumlah_bayar { font-size: 14px !important; }
+      }
+
+      /* 💻 PC (A4) */
+      @media (min-width: 481px) {
+        @page { size: A4; margin: 15mm; }
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- HEADER CETAK -->
+    <!-- HEADER CETAK -->
+       <div class="print-header">
+       <img src="./tirtamakmur.png" alt="Logo PAMSIMAS" class="logo-pamsimas" />
+       <h3><strong>PAMSIMAS TIRTA MAKMUR</strong></h3>
+       </div>
+
+    <label>Tanggal</label>
+    <input type="text" id="tanggal_input" readonly />
+
+    <label style="color: #008ecc; font-weight: 700;">ID Pelanggan (3 digit)</label>
+    <input type="text" id="id_pelanggan" placeholder="Masukkan ID Pelanggan" inputmode="numeric" maxlength="3" oninput="handleIdInput()" />
+
+    <label>Nama</label>
+    <input type="text" id="nama" readonly />
+
+    <label>Alamat</label>
+    <input type="text" id="alamat" readonly />
+
+    <label>Beban Wajib (Rp)</label>
+    <input type="number" id="beban_wajib" readonly />
+
+    <label>Denda (Rp)</label>
+    <input type="number" id="denda" readonly />
+
+    <label>Meter Awal (m³)</label>
+    <input type="number" id="meter_awal" readonly />
+
+    <label style="color: #008ecc; font-weight: 700;">Meter Akhir (m³)</label>
+    <input type="number" id="meter_akhir" oninput="hitungJumlahMeter()" placeholder="Masukkan Meter Akhir" />
+
+    <label>Jumlah Meter (m³)</label>
+    <input type="number" id="jumlah_meter" readonly />
+
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+      <div style="flex: 1;">
+        <label>Biaya Meter (Rp)</label>
+        <input type="number" id="biaya_meter" readonly />
+      </div>
+      <div style="white-space: nowrap; font-size: 13px; color: #0000ff; font-weight: 700; font-style: italic;" id="info_tarif">
+        Rp 2.000/m³
+      </div>
+    </div>
+
+<div class="print-view" style="display:none;">
+  <h3 style="text-align:center;font-size:14px;margin:0 0 4px 0;">BUKTI PEMBAYARAN AIR</h3>
+  <p style="margin:2px 0;">Tanggal : <span id="cetak_tanggal"></span></p>
+  <p style="margin:2px 0;">ID       : <span id="cetak_id"></span></p>
+  <p style="margin:2px 0;">Nama     : <span id="cetak_nama"></span></p>
+  <p style="margin:2px 0;">Alamat   : <span id="cetak_alamat"></span></p>
+  <p style="margin:2px 0;">Meter Awal : <span id="cetak_awal"></span></p>
+  <p style="margin:2px 0;">Meter Akhir: <span id="cetak_akhir"></span></p>
+  <p style="margin:2px 0;">Pemakaian : <span id="cetak_meter"></span> m³</p>
+  <p style="margin:2px 0;">Biaya Meter: Rp <span id="cetak_biaya"></span></p>
+<p style="margin:2px 0;">Abonemen : <span id="cetak_beban"></span></p>
+<p style="margin:2px 0;">Denda : <span id="cetak_denda"></span></p>
+  <p style="margin:6px 0;font-size:16px;font-weight:bold;">TOTAL: Rp <span id="cetak_total"></span></p>
+  <p style="margin:2px 0;">Pelunasan    : <span id="cetak_pelunasan"></span></p>
+  <p style="border-top:1px dashed #000;margin-top:4px;padding-top:4px;text-align:center;">
+  <p style="margin:2px 0; text-align:center;">
+  !!!!! MATUR NUWUN !!!!!
+</p>
+<p style="margin:2px 0; text-align:center;">
+  Desa Kuto Jawara
+</p>
+<p style="margin:2px 0; text-align:center; font-style:italic;">
+  Pembayaran tgl 20< dikenakan Denda
+</p>
+  </p>
+</div>
+
+    <label style="color: #ff2400; font-weight: 700;">TOTAL BAYAR (Rp)</label>
+    <input type="text" id="jumlah_bayar" readonly />
+
+    <label>Pelunasan</label>
+    <select id="pelunasan">
+      <option value="Belum">Belum</option>
+      <option value="Sudah">Sudah</option>
+    </select>
+
+    <label for="foto_meteran">Upload Foto Meteran</label>
+    <input type="file" id="foto_meteran" accept="image/*" capture="environment" />
+
+    <button id="btnKirim" onclick="kirimData()">KIRIM</button>
+    <button id="btnPrint" onclick="printPage()">🖨️ CETAK</button>
+    <button id="installBtn">Pasang Aplikasi</button>
+    <button id="btnLogout" onclick="logout()">LOGOUT</button>
+    <button id="installBtn" style="display:none; background:#06b6d4; margin-top:10px;"> 📲 Pasang Aplikasi
+
+    <div class="print-footer">
+      <p>----------------------------------------</p>
+      <p>Terima kasih telah melakukan pembayaran.</p>
+      <p><strong>PETUGAS:</strong> ___________________</p>
+    </div>
+  </div>
+  
+<div class="loading" id="loadingText">⏳ Sedang mengirim data...</div>
+  
+<script>
+    // 🔐 Cek Login
+    if (localStorage.getItem("logged_in") !== "true") {
+    window.location.href = "login.html";
+   }
+// 🔐 Auto Logout 2 Menit
+const autoLogoutMinutes = 10;
+const maxInactiveTime = autoLogoutMinutes * 60 * 1000;
+
+function checkAutoLogout() {
+  const loginData = localStorage.getItem("logged_in");
+  const loginTime = localStorage.getItem("login_time");
+
+  if (!loginData || !loginTime) {
+    return window.location.href = "login.html";
+  }
+
+  const now = Date.now();
+  const elapsed = now - Number(loginTime);
+
+  if (elapsed > maxInactiveTime) {
+    logout(); // Hapus session login
+  }
+}
+
+// 🔄 Periksa setiap 10 detik
+setInterval(checkAutoLogout, 10000);
+
+// 🔄 Reset timer jika ada aktivitas user
+function resetTimer() {
+  localStorage.setItem("login_time", Date.now());
+}
+["click","keypress","touchstart"].forEach(evt => {
+  document.addEventListener(evt, resetTimer);
+});
+
+// 🔄 Saat aplikasi/tab kembali aktif → periksa langsung
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) checkAutoLogout();
+});
+window.addEventListener("focus", checkAutoLogout);
+
+    const scriptURL = "https://script.google.com/macros/s/AKfycbysbjLx-jmOmI4MEpG2D4A1EcCE2ovSOS1ENmYm0q6mFiFUlujq2V61Vt6-zXYPTUQK/exec";
+    document.getElementById("tanggal_input").value = new Date().toLocaleDateString("id-ID");
+
+    let debounceTimer = null;
+    function handleIdInput() {
+      const input = document.getElementById("id_pelanggan");
+      let cleaned = input.value.replace(/\D/g, '').slice(0,3);
+      input.value = cleaned;
+      if (cleaned.length < 3) clearPelangganFields();
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        if (cleaned.length === 3) getDataPelanggan(cleaned.padStart(3,'0'));
+      }, 200);
+    }
+
+    function clearPelangganFields() {
+      document.getElementById("nama").value = "";
+      document.getElementById("alamat").value = "";
+      document.getElementById("beban_wajib").value = "";
+      document.getElementById("meter_awal").value = "";
+      document.getElementById("denda").value = "";
+      document.getElementById("meter_akhir").value = "";
+      document.getElementById("jumlah_meter").value = "";
+      document.getElementById("biaya_meter").value = "";
+      document.getElementById("jumlah_bayar").value = "";
+    }
+
+    async function getDataPelanggan(passedId) {
+      let id = (typeof passedId === 'string' && passedId) ? passedId : document.getElementById("id_pelanggan").value;
+      if (!id || id.length !== 3) return;
+      try {
+        const res = await fetch(`${scriptURL}?id=${encodeURIComponent(id)}`);
+        const data = await res.json();
+        if (data.status === "ok") {
+          document.getElementById("nama").value = data.nama || "";
+          document.getElementById("alamat").value = data.alamat || "";
+          document.getElementById("beban_wajib").value = data.beban_wajib || 0;
+          document.getElementById("meter_awal").value = data.meter_awal || 0;
+          document.getElementById("denda").value = data.denda || 0;
+          document.getElementById("meter_akhir").value = "";
+          document.getElementById("jumlah_meter").value = "";
+          document.getElementById("biaya_meter").value = "";
+          document.getElementById("jumlah_bayar").value = "";
+        } else {
+          alert("❌ Data pelanggan tidak ditemukan untuk ID: " + id);
+          clearPelangganFields();
+        }
+      } catch(err) {
+        console.warn('Gagal ambil data pelanggan', err);
+        alert('⚠️ Tidak dapat menghubungi server. Mungkin offline.');
+      }
+    }
+
+    function hitungJumlahMeter() {
+      const awal = Number(document.getElementById("meter_awal").value) || 0;
+      const akhir = Number(document.getElementById("meter_akhir").value) || 0;
+      const beban = Number(document.getElementById("beban_wajib").value) || 0;
+      const denda = Number(document.getElementById("denda").value) || 0;
+      const id = document.getElementById("id_pelanggan").value.padStart(3, '0');
+
+      let jumlah = akhir - awal;
+      if (jumlah < 0) jumlah = 0;
+
+      let tarifPerMeter = 2000;
+      const pelangganKhusus = ["009", "052", "090"];
+      if (pelangganKhusus.includes(id)) tarifPerMeter = 1000;
+
+      const biaya = jumlah * tarifPerMeter;
+      const total = biaya + beban + denda;
+
+      document.getElementById("jumlah_meter").value = jumlah;
+      document.getElementById("biaya_meter").value = biaya;
+
+      const jumlahBayarInput = document.getElementById("jumlah_bayar");
+      jumlahBayarInput.value = total.toLocaleString("id-ID");
+      jumlahBayarInput.dataset.raw = total;
+
+      const infoTarif = document.getElementById("info_tarif");
+      infoTarif.textContent = `Rp ${tarifPerMeter.toLocaleString("id-ID")}/m³`;
+    }
+
+    document.getElementById("btnPrint").disabled = true;
+document.getElementById("btnPrint").style.opacity = "0.6";
+document.getElementById("btnPrint").style.cursor = "not-allowed";
+
+async function kirimData() {
+  const btn = document.getElementById("btnKirim");
+  const loading = document.getElementById("loadingText");
+  btn.disabled = true;
+  loading.classList.add("show");
+
+  try {
+    const fileInput = document.getElementById("foto_meteran").files[0];
+    let base64File = "";
+    let fileName = "";
+
+    if (fileInput) {
+      fileName = fileInput.name;
+      base64File = await toBase64(fileInput);
+    }
+
+    const jumlahBayarInput = document.getElementById("jumlah_bayar");
+    const jumlahBayarRaw = jumlahBayarInput.dataset.raw || jumlahBayarInput.value.replace(/\D/g, '');
+
+    const data = {
+      tanggal_input: document.getElementById("tanggal_input").value,
+      id: document.getElementById("id_pelanggan").value.padStart(3,'0'),
+      beban_wajib: document.getElementById("beban_wajib").value,
+      denda: document.getElementById("denda").value,
+      meter_awal: document.getElementById("meter_awal").value,
+      meter_akhir: document.getElementById("meter_akhir").value,
+      jumlah_meter: document.getElementById("jumlah_meter").value,
+      biaya: document.getElementById("biaya_meter").value,
+      jumlah_bayar: jumlahBayarRaw,
+      pelunasan: document.getElementById("pelunasan").value,
+      filename: fileName,
+      file: base64File.split(",")[1] || ""
+    };
+
+    const formBody = new URLSearchParams(data);
+    const res = await fetch(scriptURL, { method: "POST", body: formBody });
+    const result = await res.json();
+
+    if (result.status === "ok") {
+      alert("✅ Data berhasil dikirim!\nTombol CETAK sudah aktif.");
+      // Aktifkan tombol cetak setelah data berhasil dikirim
+      const btnPrint = document.getElementById("btnPrint");
+      btnPrint.disabled = false;
+      btnPrint.style.opacity = "1";
+      btnPrint.style.cursor = "pointer";
+    } else {
+      alert("❌ Gagal mengirim data!");
+    }
+  } catch (err) {
+    console.warn(err);
+    alert("⚠️ Terjadi kesalahan koneksi!");
+  } finally {
+    btn.disabled = false;
+    loading.classList.remove("show");
+  }
+}
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+    }
+   function logout() {
+  localStorage.removeItem("logged_in");
+  localStorage.removeItem("login_time");
+  window.location.href = "login.html";
+}
+   function printPage() {
+ const btnPrint = document.getElementById("btnPrint");
+  // Cegah jika belum diaktifkan oleh kirimData()
+  if (btnPrint.disabled) {
+    alert("⚠️ KIRIM DATA TERLEBIH DAHULU\nSilakan tekan tombol 'KIRIM' sebelum mencetak.");
+    return;
+  }
+ // Sembunyikan tombol saat cetak
+  document.getElementById("btnKirim").style.display = "none";
+  document.getElementById("installBtn").style.display = "none";
+  document.getElementById("btnPrint").style.display = "none";
+  document.getElementById("cetak_tanggal").innerText = document.getElementById("tanggal_input").value;
+  document.getElementById("cetak_id").innerText = document.getElementById("id_pelanggan").value;
+  document.getElementById("cetak_nama").innerText = document.getElementById("nama").value;
+  document.getElementById("cetak_alamat").innerText = document.getElementById("alamat").value;
+  document.getElementById("cetak_awal").innerText = document.getElementById("meter_awal").value;
+  document.getElementById("cetak_akhir").innerText = document.getElementById("meter_akhir").value;
+  document.getElementById("cetak_meter").innerText = document.getElementById("jumlah_meter").value;
+  document.getElementById("cetak_biaya").innerText = document.getElementById("biaya_meter").value;
+document.getElementById("cetak_beban").innerText = document.getElementById("beban_wajib").value;
+document.getElementById("cetak_denda").innerText = document.getElementById("denda").value;
+  document.getElementById("cetak_total").innerText = document.getElementById("jumlah_bayar").value;
+  document.getElementById("cetak_pelunasan").innerText = document.getElementById("pelunasan").value;
+window.print();
+
+
+  // Reload otomatis setelah cetak selesai
+  setTimeout(() => {
+    location.reload();
+  }, 1000);
+}
+let deferredPrompt;
+const installBtn = document.getElementById("installBtn");
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = "block"; // ✅ Tombol muncul di HP
+  console.log("✅ PWA install prompt ready");
+});
+
+installBtn.addEventListener("click", async () => {
+  installBtn.style.display = "none";
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log("Install response:", outcome);
+  deferredPrompt = null;
+});
+
+
+    // PWA
+    if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(() => console.log("✅ Service Worker aktif"));
+}
+  </script>
+</body>
+</html>
