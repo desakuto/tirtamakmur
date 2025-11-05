@@ -8,6 +8,27 @@
   <link rel="icon" href="icons/icon-192.png">
 
   <style>
+@media print {
+
+  /* pastikan semua teks tampil */
+  span {
+    visibility: visible !important;
+    display: inline !important;
+    color: #000 !important;
+  }
+
+  /* MENJAMIN hasil innerText tampil meski form disembunyikan */
+  .print-view * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* cegah input[number] ghost */
+  input, select {
+    visibility: hidden !important;
+  }
+}
+
     /* =============== NORMAL LAYOUT (PC & HP) =============== */
     :root {
       --bg: #f7faff;
@@ -112,63 +133,54 @@
       display: none !important;
     }
 
-    @media print {
-      @media print {
-  /* pastikan semua span terbaca */
-  span {
-    display: inline !important;
+   /* =============== PRINT FIX THERMAL 58MM =============== */
+@media print {
+
+  /* Hanya bagian cetak yang tampil */
+  .container, button, #info_tarif, #foto_meteran {
+    display: none !important;
+  }
+
+  .print-view, .print-header {
+    display: block !important;
+    width: 58mm !important;
+    margin: 0 auto !important;
+    padding: 4px 6px !important;
+  }
+
+  /* Pastikan semua text (angka) terbaca */
+  span, .print-view * {
     visibility: visible !important;
     color: #000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* force appearance inputs */
+  /* NON-AFFECT INPUT VALUE: Jangan invis */
   input, select {
     -webkit-appearance: none !important;
+    color: #000 !important; 
   }
-}
 
-      /* hide everything except the print area */
-      body, html { margin:0; padding:0; }
-      /* hide form area */
-      .container { display: none !important; }
-
-      /* show only print header & view */
-      .print-header, .print-view {
-        display: block !important;
-      }
-
-      /* thermal width */
-      body, .print-header, .print-view {
-        width: 58mm !important;
-        margin: 0 !important;
-        padding: 4px 6px !important;
-      }
-
-      /* hide interactive elements that may still be visible */
-      input, select, button, #info_tarif, #foto_meteran {
-        display: none !important;
-      }
-
-      /* thermal font */
-      * {
-        font-family: monospace !important;
-        font-size: 11px !important;
-        line-height: 1.1 !important;
-      }
-
-      /* tighten prints */
-      .print-view p { margin: 2px 0; }
-      .print-header { text-align:center; margin-bottom:6px; }
-      .print-header img { width:64px; display:block; margin: 0 auto 4px; }
-
-  pre {
-    white-space: pre !important;
+  /* Font standar thermal */
+  * {
     font-family: "Courier New", monospace !important;
     font-size: 11px !important;
     line-height: 1.2 !important;
   }
 
-    }
+  pre {
+    white-space: pre !important;
+    margin: 2px 0 !important;
+  }
+
+  body, html {
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+
   </style>
 </head>
 
@@ -454,50 +466,46 @@ function printPage() {
     return;
   }
 
-  const getVal = (id) => {
-    const el = document.getElementById(id);
-    if (!el) return "";
-    let raw = el.dataset?.raw || el.value || el.textContent;
-    raw = raw.toString().replace(/\D/g, "");
-    return Number(raw || 0);
-  };
-
+  // Ambil semua data MENTOAH sebelum print
   const tanggal = document.getElementById("tanggal_input").value;
   const id = document.getElementById("id_pelanggan").value.padStart(3,'0');
+  const nama = document.getElementById("nama").value;
+  const alamat = document.getElementById("alamat").value;
 
-  const awal = getVal("meter_awal");
-  const akhir = getVal("meter_akhir");
-  const meter = akhir - awal < 0 ? 0 : akhir - awal;
+  const meter_awal = parseInt(document.getElementById("meter_awal").value) || 0;
+  const meter_akhir = parseInt(document.getElementById("meter_akhir").value) || 0;
+  const jumlah_meter = parseInt(document.getElementById("jumlah_meter").value) || 0;
+  const biaya_meter = parseInt(document.getElementById("biaya_meter").value) || 0;
+  const beban = parseInt(document.getElementById("beban_wajib").value) || 0;
+  const denda = parseInt(document.getElementById("denda").value) || 0;
 
-  const biaya = getVal("biaya_meter");
-  const beban = getVal("beban_wajib");
-  const denda = getVal("denda");
-  const total = biaya + beban + denda;
+  const total = biaya_meter + beban + denda;
+  const pelunasan = document.getElementById("pelunasan").value;
 
-  const formatIDR = (num)=> num.toLocaleString("id-ID");
+  // Format aman untuk thermal
+  const f = (v)=> v.toLocaleString("id-ID");
 
-  document.getElementById("cetak_tanggal").textContent = tanggal;
-  document.getElementById("cetak_id").textContent = id;
-  document.getElementById("cetak_nama").textContent = document.getElementById("nama").value;
-  document.getElementById("cetak_alamat").textContent = document.getElementById("alamat").value;
-  document.getElementById("cetak_awal").textContent = awal;
-  document.getElementById("cetak_akhir").textContent = akhir;
-  document.getElementById("cetak_meter").textContent = meter;
-  document.getElementById("cetak_biaya").textContent = formatIDR(biaya);
-  document.getElementById("cetak_beban").textContent = formatIDR(beban);
-  document.getElementById("cetak_denda").textContent = formatIDR(denda);
-  document.getElementById("cetak_total").textContent = formatIDR(total);
-  document.getElementById("cetak_pelunasan").textContent = 
-      document.getElementById("pelunasan").value;
+  // Isi ke print-area (Bukan input lagi → 100% terbaca printer thermal)
+  document.getElementById("cetak_tanggal").innerText = tanggal;
+  document.getElementById("cetak_id").innerText = id;
+  document.getElementById("cetak_nama").innerText = nama;
+  document.getElementById("cetak_alamat").innerText = alamat;
+  document.getElementById("cetak_awal").innerText = meter_awal;
+  document.getElementById("cetak_akhir").innerText = meter_akhir;
+  document.getElementById("cetak_meter").innerText = jumlah_meter;
+  document.getElementById("cetak_biaya").innerText = f(biaya_meter);
+  document.getElementById("cetak_beban").innerText = f(beban);
+  document.getElementById("cetak_denda").innerText = f(denda);
+  document.getElementById("cetak_total").innerText = f(total);
+  document.getElementById("cetak_pelunasan").innerText = pelunasan;
 
-  // ✅ Paksa render lalu print
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      window.print();
-      setTimeout(() => location.reload(), 500);
-    }, 200);
-  });
+  // ✅ jaga jeda supaya DOM ter-update dulu
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => location.reload(), 600);
+  }, 300);
 }
+
 
 </script>
 </body>
