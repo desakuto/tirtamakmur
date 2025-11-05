@@ -440,45 +440,51 @@ function logout() {
 function printPage() {
   const btnPrint = document.getElementById("btnPrint");
   if (btnPrint.disabled) {
-    alert("⚠️ KIRIM DATA TERLEBIH DAHULU\nSilakan tekan tombol 'KIRIM' sebelum mencetak.");
+    alert("⚠️ KIRIM DATA TERLEBIH DAHULU");
     return;
   }
 
-  // copy values to print spans
-  const map = [
-    ["cetak_tanggal", "tanggal_input"],
-    ["cetak_id", "id_pelanggan"],
-    ["cetak_nama", "nama"],
-    ["cetak_alamat", "alamat"],
-    ["cetak_awal", "meter_awal"],
-    ["cetak_akhir", "meter_akhir"],
-    ["cetak_meter", "jumlah_meter"],
-    ["cetak_biaya", "biaya_meter"],
-    ["cetak_beban", "beban_wajib"],
-    ["cetak_denda", "denda"],
-    ["cetak_total", "jumlah_bayar"],
-    ["cetak_pelunasan", "pelunasan"]
-  ];
-  map.forEach(([cetak, input]) => {
-    const elC = document.getElementById(cetak);
-    const elI = document.getElementById(input);
-    elC.textContent = elI ? (elI.value ?? '') : '';
-  });
+  // Ambil nilai mentah dari input
+  const data = {
+    tanggal: document.getElementById("tanggal_input").value,
+    id: document.getElementById("id_pelanggan").value.padStart(3,'0'),
+    nama: document.getElementById("nama").value,
+    alamat: document.getElementById("alamat").value,
+    awal: document.getElementById("meter_awal").value,
+    akhir: document.getElementById("meter_akhir").value,
+    meter: document.getElementById("jumlah_meter").value,
+    biaya: document.getElementById("biaya_meter").value,
+    beban: document.getElementById("beban_wajib").value,
+    denda: document.getElementById("denda").value,
+    total: (document.getElementById("jumlah_bayar").dataset.raw ||
+            document.getElementById("jumlah_bayar").value.replace(/\D/g,'')),
+    pelunasan: document.getElementById("pelunasan").value
+  };
 
-  // reveal print area (in case it was hidden)
-  document.querySelectorAll('.print-header, .print-view').forEach(n => n.style.display = 'block');
+  // Isi ke elemen cetak
+  document.getElementById("cetak_tanggal").textContent = data.tanggal;
+  document.getElementById("cetak_id").textContent = data.id;
+  document.getElementById("cetak_nama").textContent = data.nama;
+  document.getElementById("cetak_alamat").textContent = data.alamat;
+  document.getElementById("cetak_awal").textContent = data.awal;
+  document.getElementById("cetak_akhir").textContent = data.akhir;
+  document.getElementById("cetak_meter").textContent = data.meter;
+  document.getElementById("cetak_biaya").textContent = Number(data.biaya).toLocaleString("id-ID");
+  document.getElementById("cetak_beban").textContent = Number(data.beban).toLocaleString("id-ID");
+  document.getElementById("cetak_denda").textContent = Number(data.denda).toLocaleString("id-ID");
+  document.getElementById("cetak_total").textContent = Number(data.total).toLocaleString("id-ID");
+  document.getElementById("cetak_pelunasan").textContent = data.pelunasan;
 
-  // ensure DOM repaint then print
+  // Tampilkan area cetak dan print
   requestAnimationFrame(() => {
-    // small delay to allow WebView/printer render engines capture the update
     setTimeout(() => {
       window.print();
-      // After print, reload to restore form UI
       setTimeout(() => location.reload(), 700);
-    }, 350);
+    }, 300);
   });
 }
 </script>
 </body>
 </html>
+
 
