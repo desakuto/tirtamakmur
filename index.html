@@ -135,44 +135,30 @@
 
 
     /* 🖨️ Tampilan Struk Cetak */
-    @media print {
-      @page { size: auto; margin: 5mm; }
-      body, .container {
-        background: white !important;
-        color: black !important;
-        box-shadow: none !important;
-      }
-      * {
-        color: black !important;
-        background: white !important;
-      }
-      /* ❌ Sembunyikan tombol & upload saat cetak */
-      button, #installBtn, #foto_meteran, label[for="foto_meteran"] {
-        display: none !important;
-      }
-      input, select {
-        border: none !important;
-        outline: none !important;
-        font-size: 12px !important;
-        padding: 0;
-      }
-      .judul {
-        font-size: 16px !important;
-        text-align: center;
-        color: black !important;
-        background: none !important;
-        -webkit-text-fill-color: black !important;
-      }
-      #jumlah_bayar {
-        color: black !important;
-        font-size: 18px !important;
-        font-weight: 800 !important;
-      }
-      .print-footer {
-        margin-top: 12px;
-        text-align: center;
-        font-size: 11px;
-      }
+  
+@media print {
+
+  * {
+    font-family: monospace !important; /* ✅ Font A */
+    font-size: 11px !important;
+    line-height: 1.1 !important; /* ✅ Jarak mepet */
+  }
+
+  .container, body {
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    width: 58mm !important; /* ✅ Ukuran struk thermal */
+  }
+
+  input, select, button, label, #info_tarif, #foto_meteran {
+    display: none !important;
+  }
+
+  .print-view {
+    display: block !important; /* ✅ Hanya muncul saat print */
+  }
+}
 
       /* 📱 Thermal Printer 57mm */
       @media (max-width: 480px) {
@@ -197,9 +183,8 @@
     <!-- HEADER CETAK -->
        <div class="print-header">
        <img src="./tirtamakmur.png" alt="Logo PAMSIMAS" class="logo-pamsimas" />
-       <h3><strong>BUKTI PEMBAYARAN TAGIHAN AIR</strong></h3>
+       <h3><strong>PAMSIMAS TIRTA MAKMUR</strong></h3>
        </div>
-
 
     <label>Tanggal</label>
     <input type="text" id="tanggal_input" readonly />
@@ -237,6 +222,33 @@
         Rp 2.000/m³
       </div>
     </div>
+
+<div class="print-view" style="display:none;">
+  <h3 style="text-align:center;font-size:14px;margin:0 0 4px 0;">BUKTI PEMBAYARAN AIR</h3>
+  <p style="margin:2px 0;">Tanggal : <span id="cetak_tanggal"></span></p>
+  <p style="margin:2px 0;">ID       : <span id="cetak_id"></span></p>
+  <p style="margin:2px 0;">Nama     : <span id="cetak_nama"></span></p>
+  <p style="margin:2px 0;">Alamat   : <span id="cetak_alamat"></span></p>
+  <p style="margin:2px 0;">Meter Awal : <span id="cetak_awal"></span></p>
+  <p style="margin:2px 0;">Meter Akhir: <span id="cetak_akhir"></span></p>
+  <p style="margin:2px 0;">Pemakaian : <span id="cetak_meter"></span> m³</p>
+  <p style="margin:2px 0;">Biaya Meter: Rp <span id="cetak_biaya"></span></p>
+<p style="margin:2px 0;">Abonemen : <span id="cetak_beban"></span></p>
+<p style="margin:2px 0;">Denda : <span id="cetak_denda"></span></p>
+  <p style="margin:6px 0;font-size:16px;font-weight:bold;">TOTAL: Rp <span id="cetak_total"></span></p>
+  <p style="margin:2px 0;">Pelunasan    : <span id="cetak_pelunasan"></span></p>
+  <p style="border-top:1px dashed #000;margin-top:4px;padding-top:4px;text-align:center;">
+  <p style="margin:2px 0; text-align:center;">
+  !!!!! MATUR NUWUN !!!!!
+</p>
+<p style="margin:2px 0; text-align:center;">
+  Desa Kuto Jawara
+</p>
+<p style="margin:2px 0; text-align:center; font-style:italic;">
+  Pembayaran tgl 20< dikenakan Denda
+</p>
+  </p>
+</div>
 
     <label style="color: #ff2400; font-weight: 700;">TOTAL BAYAR (Rp)</label>
     <input type="text" id="jumlah_bayar" readonly />
@@ -462,17 +474,30 @@ async function kirimData() {
   window.location.href = "login.html";
 }
    function printPage() {
-  const btnPrint = document.getElementById("btnPrint");
+ const btnPrint = document.getElementById("btnPrint");
   // Cegah jika belum diaktifkan oleh kirimData()
   if (btnPrint.disabled) {
     alert("⚠️ KIRIM DATA TERLEBIH DAHULU\nSilakan tekan tombol 'KIRIM' sebelum mencetak.");
     return;
   }
-  // Sembunyikan tombol saat cetak
+ // Sembunyikan tombol saat cetak
   document.getElementById("btnKirim").style.display = "none";
   document.getElementById("installBtn").style.display = "none";
   document.getElementById("btnPrint").style.display = "none";
-  window.print();
+  document.getElementById("cetak_tanggal").innerText = document.getElementById("tanggal_input").value;
+  document.getElementById("cetak_id").innerText = document.getElementById("id_pelanggan").value;
+  document.getElementById("cetak_nama").innerText = document.getElementById("nama").value;
+  document.getElementById("cetak_alamat").innerText = document.getElementById("alamat").value;
+  document.getElementById("cetak_awal").innerText = document.getElementById("meter_awal").value;
+  document.getElementById("cetak_akhir").innerText = document.getElementById("meter_akhir").value;
+  document.getElementById("cetak_meter").innerText = document.getElementById("jumlah_meter").value;
+  document.getElementById("cetak_biaya").innerText = document.getElementById("biaya_meter").value;
+document.getElementById("cetak_beban").innerText = document.getElementById("beban_wajib").value;
+document.getElementById("cetak_denda").innerText = document.getElementById("denda").value;
+  document.getElementById("cetak_total").innerText = document.getElementById("jumlah_bayar").value;
+  document.getElementById("cetak_pelunasan").innerText = document.getElementById("pelunasan").value;
+window.print();
+
 
   // Reload otomatis setelah cetak selesai
   setTimeout(() => {
