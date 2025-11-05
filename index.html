@@ -113,10 +113,20 @@
     }
 
     @media print {
-      span {
+      @media print {
+  /* pastikan semua span terbaca */
+  span {
     display: inline !important;
     visibility: visible !important;
-    color: #000 !important;}
+    color: #000 !important;
+  }
+
+  /* force appearance inputs */
+  input, select {
+    -webkit-appearance: none !important;
+  }
+}
+
       /* hide everything except the print area */
       body, html { margin:0; padding:0; }
       /* hide form area */
@@ -444,47 +454,52 @@ function printPage() {
     return;
   }
 
-  // Ambil nilai mentah dari input
-  const data = {
-    tanggal: document.getElementById("tanggal_input").value,
-    id: document.getElementById("id_pelanggan").value.padStart(3,'0'),
-    nama: document.getElementById("nama").value,
-    alamat: document.getElementById("alamat").value,
-    awal: document.getElementById("meter_awal").value,
-    akhir: document.getElementById("meter_akhir").value,
-    meter: document.getElementById("jumlah_meter").value,
-    biaya: document.getElementById("biaya_meter").value,
-    beban: document.getElementById("beban_wajib").value,
-    denda: document.getElementById("denda").value,
-    total: (document.getElementById("jumlah_bayar").dataset.raw ||
-            document.getElementById("jumlah_bayar").value.replace(/\D/g,'')),
-    pelunasan: document.getElementById("pelunasan").value
+  const getVal = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return "";
+    let raw = el.dataset?.raw || el.value || el.textContent;
+    raw = raw.toString().replace(/\D/g, "");
+    return Number(raw || 0);
   };
 
-  // Isi ke elemen cetak
-  document.getElementById("cetak_tanggal").textContent = data.tanggal;
-  document.getElementById("cetak_id").textContent = data.id;
-  document.getElementById("cetak_nama").textContent = data.nama;
-  document.getElementById("cetak_alamat").textContent = data.alamat;
-  document.getElementById("cetak_awal").textContent = data.awal;
-  document.getElementById("cetak_akhir").textContent = data.akhir;
-  document.getElementById("cetak_meter").textContent = data.meter;
-  document.getElementById("cetak_biaya").textContent = Number(data.biaya).toLocaleString("id-ID");
-  document.getElementById("cetak_beban").textContent = Number(data.beban).toLocaleString("id-ID");
-  document.getElementById("cetak_denda").textContent = Number(data.denda).toLocaleString("id-ID");
-  document.getElementById("cetak_total").textContent = Number(data.total).toLocaleString("id-ID");
-  document.getElementById("cetak_pelunasan").textContent = data.pelunasan;
+  const tanggal = document.getElementById("tanggal_input").value;
+  const id = document.getElementById("id_pelanggan").value.padStart(3,'0');
 
-  // Tampilkan area cetak dan print
+  const awal = getVal("meter_awal");
+  const akhir = getVal("meter_akhir");
+  const meter = akhir - awal < 0 ? 0 : akhir - awal;
+
+  const biaya = getVal("biaya_meter");
+  const beban = getVal("beban_wajib");
+  const denda = getVal("denda");
+  const total = biaya + beban + denda;
+
+  const formatIDR = (num)=> num.toLocaleString("id-ID");
+
+  document.getElementById("cetak_tanggal").textContent = tanggal;
+  document.getElementById("cetak_id").textContent = id;
+  document.getElementById("cetak_nama").textContent = document.getElementById("nama").value;
+  document.getElementById("cetak_alamat").textContent = document.getElementById("alamat").value;
+  document.getElementById("cetak_awal").textContent = awal;
+  document.getElementById("cetak_akhir").textContent = akhir;
+  document.getElementById("cetak_meter").textContent = meter;
+  document.getElementById("cetak_biaya").textContent = formatIDR(biaya);
+  document.getElementById("cetak_beban").textContent = formatIDR(beban);
+  document.getElementById("cetak_denda").textContent = formatIDR(denda);
+  document.getElementById("cetak_total").textContent = formatIDR(total);
+  document.getElementById("cetak_pelunasan").textContent = 
+      document.getElementById("pelunasan").value;
+
+  // ✅ Paksa render lalu print
   requestAnimationFrame(() => {
     setTimeout(() => {
       window.print();
-      setTimeout(() => location.reload(), 700);
-    }, 300);
+      setTimeout(() => location.reload(), 500);
+    }, 200);
   });
 }
+
 </script>
 </body>
 </html>
-
 
