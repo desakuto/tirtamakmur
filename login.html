@@ -41,12 +41,41 @@
     border-radius: 6px;
     cursor: pointer;
   }
+/* Loading Overlay */
+.loading-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  color: #0061c9;
+  font-weight: bold;
+}
+.spinner {
+  border: 4px solid #cce5ff;
+  border-top: 4px solid #0061c9;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 </style>
 </head>
 
 <body>
 <div class="login-box">
-  <h2>LOGIN PETUGAS</h2>
+  <h2>LOGIN DULU BRO</h2>
 
   <input type="text" id="username" placeholder="Username">
   <input type="password" id="password" placeholder="Password">
@@ -58,20 +87,29 @@
   const USER = "admin";     // 🔐 Ubah sesuai keinginan
   const PASS = "1234";      // 🔐 Ubah sesuai keinginan
 
-  function login() {
-    const u = document.getElementById("username").value;
-    const p = document.getElementById("password").value;
+ function login() {
+  const u = document.getElementById("username").value.trim();
+  const p = document.getElementById("password").value.trim();
 
-    if (u === USER && p === PASS) {
+  if (u === USER && p === PASS) {
+    document.getElementById("loading").style.display = "flex";
+
+    setTimeout(() => {
       localStorage.setItem("logged_in", "true");
       localStorage.setItem("login_time", Date.now());
       window.location.href = "index.html";
-    } else {
-      alert("❌ Username atau password salah!");
-    }
+    }, 2000); // loading 2 detik
+  } else {
+    alert("❌ Username atau password salah!");
   }
+}
+
 </script>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div style="margin-top:10px;">Memeriksa akses...</div>
+</div>
 
 </body>
 </html>
-
