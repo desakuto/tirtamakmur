@@ -521,16 +521,14 @@ async function kirimData() {
   window.location.href = "login.html";
 }
    function printPage() {
- const btnPrint = document.getElementById("btnPrint");
-  // Cegah jika belum diaktifkan oleh kirimData()
+  const btnPrint = document.getElementById("btnPrint");
+
   if (btnPrint.disabled) {
     alert("⚠️ KIRIM DATA TERLEBIH DAHULU\nSilakan tekan tombol 'KIRIM' sebelum mencetak.");
     return;
   }
- // Sembunyikan tombol saat cetak
-  document.getElementById("btnKirim").style.display = "none";
-  document.getElementById("installBtn").style.display = "none";
-  document.getElementById("btnPrint").style.display = "none";
+
+  // ✅ Isi data struk dulu
   document.getElementById("cetak_tanggal").innerText = document.getElementById("tanggal_input").value;
   document.getElementById("cetak_id").innerText = document.getElementById("id_pelanggan").value;
   document.getElementById("cetak_nama").innerText = document.getElementById("nama").value;
@@ -539,18 +537,25 @@ async function kirimData() {
   document.getElementById("cetak_akhir").innerText = document.getElementById("meter_akhir").value;
   document.getElementById("cetak_meter").innerText = document.getElementById("jumlah_meter").value;
   document.getElementById("cetak_biaya").innerText = document.getElementById("biaya_meter").value;
-document.getElementById("cetak_beban").innerText = document.getElementById("beban_wajib").value;
-document.getElementById("cetak_denda").innerText = document.getElementById("denda").value;
+  document.getElementById("cetak_beban").innerText = document.getElementById("beban_wajib").value;
+  document.getElementById("cetak_denda").innerText = document.getElementById("denda").value;
   document.getElementById("cetak_total").innerText = document.getElementById("jumlah_bayar").value;
   document.getElementById("cetak_pelunasan").innerText = document.getElementById("pelunasan").value;
-window.print();
 
+  // ✅ Sembunyikan tombol setelah data struk siap
+  document.getElementById("btnKirim").style.display = "none";
+  document.getElementById("installBtn").style.display = "none";
+  document.getElementById("btnPrint").style.display = "none";
 
-  // Reload otomatis setelah cetak selesai
+  // ✅ Delay kecil biar DOM sempat update sebelum print
   setTimeout(() => {
-    location.reload();
-  }, 1000);
+    window.print();
+
+    // Reload setelah cetak selesai
+    setTimeout(() => location.reload(), 500);
+  }, 300);
 }
+
 let deferredPrompt;
 const installBtn = document.getElementById("installBtn");
 
