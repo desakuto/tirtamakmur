@@ -160,6 +160,33 @@
     display: block !important; /* ✅ Hanya muncul saat print */
   }
 }
+/* 🔥 Perbesar font tampilan */
+body, input, select, button {
+  font-size: 17px; /* default lebih besar */
+}
+
+/* Judul lebih mencolok */
+.judul {
+  font-size: 26px !important;
+}
+
+/* Label lebih jelas */
+label {
+  font-size: 16px !important;
+  font-weight: 700;
+}
+
+/* Input angka total lebih besar */
+#jumlah_bayar {
+  font-size: 32px !important;
+  font-weight: 900 !important;
+}
+
+/* Tombol lebih mudah ditekan */
+button {
+  font-size: 18px !important;
+  padding: 14px !important;
+}
 
       /* 📱 Thermal Printer 57mm */
       @media (max-width: 480px) {
@@ -263,10 +290,10 @@
     <label for="foto_meteran">Upload Foto Meteran</label>
     <input type="file" id="foto_meteran" accept="image/*" capture="environment" />
 
-    <button id="btnKirim" onclick="kirimData()">KIRIM</button>
+    <button id="btnKirim" onclick="kirimData()">➤ KIRIM</button>
     <button id="btnPrint" onclick="printPage()">🖨️ CETAK</button>
-    <button id="installBtn">Pasang Aplikasi</button>
-    <button id="btnLogout" onclick="logout()">LOGOUT</button>
+    <button id="installBtn">Install APK</button>
+    <button id="btnLogout" onclick="logout()">EXIT</button>
     <button id="installBtn" style="display:none; background:#06b6d4; margin-top:10px;"> 📲 Pasang Aplikasi
 
     <div class="print-footer">
@@ -276,7 +303,7 @@
     </div>
   </div>
   
-<div class="loading" id="loadingText">⏳ Sedang mengirim data...</div>
+<div class="loading" id="loadingText">⏳ mengirim data... ⏳</div>
   
 <script>
     // 🔐 Cek Login
@@ -444,12 +471,21 @@ async function kirimData() {
     const result = await res.json();
 
     if (result.status === "ok") {
-      alert("✅ Data berhasil dikirim!\nTombol CETAK sudah aktif.");
+      alert("   ✅ TERKIRIM !✅\n👇👇👇\nCETAK >>> Emulator.");
       // Aktifkan tombol cetak setelah data berhasil dikirim
-      const btnPrint = document.getElementById("btnPrint");
-      btnPrint.disabled = false;
-      btnPrint.style.opacity = "1";
-      btnPrint.style.cursor = "pointer";
+     // Awal halaman: tombol CETAK dikunci total
+const btnPrint = document.getElementById("btnPrint");
+btnPrint.disabled = true;
+btnPrint.style.opacity = "0.4";
+btnPrint.style.cursor = "not-allowed";
+
+// Blokir klik paksa sebelum kirim berhasil
+btnPrint.addEventListener("click", function(e) {
+  if (btnPrint.disabled) {
+    e.preventDefault();
+    alert("⚠️ KIRIM DATA TERLEBIH DAHULU!");
+  }
+});
     } else {
       alert("❌ Gagal mengirim data!");
     }
@@ -496,7 +532,8 @@ async function kirimData() {
   const pelunasan = document.getElementById("pelunasan").value;
 
   const struk =
-`       PAMSIMAS TIRTA MAKMUR
+`       
+❄ PAMSIMAS TIRTA MAKMUR ❄
 --------------------------------
 Tanggal    : ${tanggal}
 ID         : ${id}
@@ -513,7 +550,7 @@ Denda      : Rp ${denda.toLocaleString("id-ID")}
 
 Status : ${pelunasan}
 --------------------------------
-!!! MATUR NUWUN !!!
+🌫🌫🌫 MATUR SUWUN LURRR 🌫🌫🌫
 Bayar lewat tgl 20 kena denda
 `;
 
@@ -555,4 +592,5 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
