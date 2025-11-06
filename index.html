@@ -443,7 +443,7 @@ async function kirimData() {
     const result = await res.json();
 
     if (result.status === "ok") {
-      alert("✅ Data berhasil dikirim!\nTombol CETAK sudah aktif.");
+      alert("✅ Sukses!\nLanjut CETAK.");
       // Aktifkan tombol cetak setelah data berhasil dikirim
       const btnPrint = document.getElementById("btnPrint");
       btnPrint.disabled = false;
@@ -480,53 +480,103 @@ function printPage() {
     return;
   }
 
+  // Ambil angka/field raw (pakai dataset.raw untuk total)
   const total = Number(document.getElementById("jumlah_bayar").dataset.raw || 0);
   const biaya = Number(document.getElementById("biaya_meter").value || 0);
   const beban = Number(document.getElementById("beban_wajib").value || 0);
   const denda = Number(document.getElementById("denda").value || 0);
 
-  const strukContent =
-`PAMSIMAS TIRTA MAKMUR
--------------------------------
-BUKTI PEMBAYARAN AIR
+  // Siapkan isi struk sebagai text biasa (monospace)
+  const lines = [
+    "     PAMSIMAS TIRTA MAKMUR",
+    "-------------------------------",
+    "BUKTI PEMBAYARAN AIR",
+    "",
+    `Tanggal    : ${document.getElementById("tanggal_input").value}`,
+    `ID         : ${document.getElementById("id_pelanggan").value}`,
+    `Nama       : ${document.getElementById("nama").value}`,
+    `Alamat     : ${document.getElementById("alamat").value}`,
+    "",
+    `Meter Awal : ${document.getElementById("meter_awal").value}`,
+    `Meter Akhir: ${document.getElementById("meter_akhir").value}`,
+    `Pemakaian  : ${document.getElementById("jumlah_meter").value} m³`,
+    "",
+    `Biaya Meter: Rp ${biaya.toLocaleString("id-ID")}`,
+    `Abonemen   : Rp ${beban.toLocaleString("id-ID")}`,
+    `Denda      : Rp ${denda.toLocaleString("id-ID")}`,
+    "",
+    `TOTAL BAYAR: Rp ${total.toLocaleString("id-ID")}`,
+    `Pelunasan  : ${document.getElementById("pelunasan").value}`,
+    "",
+    "--------------------------------",
+    "!!!!! SUWUN NGGIH LURRR !!!!!",
+    "Pembayaran tgl 20< dikenakan Denda",
+    ""
+  ];
 
-Tanggal    : ${document.getElementById("tanggal_input").value}
-ID         : ${document.getElementById("id_pelanggan").value}
-Nama       : ${document.getElementById("nama").value}
-Alamat     : ${document.getElementById("alamat").value}
+  const textToPrint = lines.join("\n");
 
-Meter Awal : ${document.getElementById("meter_awal").value}
-Meter Akhir: ${document.getElementById("meter_akhir").value}
-Pemakaian  : ${document.getElementById("jumlah_meter").value} m³
+  // 🟢 METODE 1: RawBT (Android) - langsung cetak tanpa preview jika RawBT terpasang
+  // RawBT expects a URL like: rawbt://print?text=... (text should be URL-encoded)
+  try {
+    const rawbtHref = "rawbt://print?text=" + encodeURIComponent(textToPrint);
+    // create temporary link and click to invoke RawBT
+    const a = document.createElement("a");
+    a.href = rawbtHref;
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 
-Biaya Meter: Rp ${biaya.toLocaleString("id-ID")}
-Abonemen   : Rp ${beban.toLocaleString("id-ID")}
-Denda      : Rp ${denda.toLocaleString("id-ID")}
+    // Setelah memanggil RawBT, kita reload singkat untuk menjaga UI
+    setTimeout(() => location.reload(), 1000);
+    return; // berhenti di sini (sukses memanggil RawBT)
+  } catch (e) {
+    console.warn("RawBT call failed, falling back to print:", e);
+    // lanjut ke fallback
+  }
 
-TOTAL BAYAR: Rp ${total.toLocaleString("id-ID")}
-Pelunasan  : ${document.getElementById("pelunasan").value}
+  // 🔁 METODE 2 (Fallback): Buka jendela baru dan print (masih bisa memunculkan preview)
+  const wnd = window.open("", "_blank", "width=400,height=600");
+  if (!wnd) {
+    alert("❌ Gagal membuka jendela cetak. Pastikan pop-up tidak diblokir.");
+    return;
+  }
 
---------------------------------
-!!!!! MATUR NUWUN !!!!!
-Desa Kuto Jawara
-Pembayaran tgl 20 ke atas dikenakan Denda
-`;
-
-  const wnd = window.open("", "_blank");
-
+  const html = `
+    <html>
+      <head>
+        <title>Struk Cetak</title>
+        <style>
+          body { font-family: monospace; white-space: pre; font-size: 12px; margin: 8px; }
+        </style>
+      </head>
+      <body>
+        ${textToPrint.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
+      </body>
+    </html>
+  `;
   wnd.document.open();
-  wnd.document.write(`<pre style="font-family: monospace; font-size:12px;">${strukContent}</pre>`);
+  wnd.document.write(html);
   wnd.document.close();
 
-  wnd.onload = () => {
+  // Tunggu document siap lalu panggil print (jika browser masih minta preview, itu ditangani browser)
+  wnd.onload = function() {
+    // Fokus ke window print agar dialog muncul di device
     wnd.focus();
-    wnd.print();
 
-    // Auto-close agar hemat tab
+    // Coba panggil print — pada beberapa browser ini tetap menampilkan preview,
+    // tapi ini fallback kalau RawBT tidak tersedia.
+    try {
+      wnd.print();
+    } catch (err) {
+      console.warn("Print fallback error:", err);
+    }
+
     setTimeout(() => {
-      wnd.close();
+      try { wnd.close(); } catch(e){ /* ignore */ }
       location.reload();
-    }, 800);
+    }, 900);
   };
 }
 
@@ -557,6 +607,7 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
 
