@@ -476,7 +476,7 @@ async function kirimData() {
 function printPage() {
   const btnPrint = document.getElementById("btnPrint");
   if (btnPrint.disabled) {
-    alert("⚠️ KIRIM DATA TERLEBIH DAHULU! ✅");
+    alert("⚠️ KIRIM DATA TERLEBIH DAHULU!");
     return;
   }
 
@@ -485,7 +485,7 @@ function printPage() {
   const beban = Number(document.getElementById("beban_wajib").value || 0);
   const denda = Number(document.getElementById("denda").value || 0);
 
-  const struk =
+  const strukContent =
 `PAMSIMAS TIRTA MAKMUR
 -------------------------------
 BUKTI PEMBAYARAN AIR
@@ -509,16 +509,25 @@ Pelunasan  : ${document.getElementById("pelunasan").value}
 --------------------------------
 !!!!! MATUR NUWUN !!!!!
 Desa Kuto Jawara
-Pembayaran tgl 20 ke atas
-dikenakan Denda
+Pembayaran tgl 20 ke atas dikenakan Denda
 `;
 
-  const newWin = window.open("", "_blank");
-  newWin.document.write(`<pre style="font-family: monospace">${struk}</pre>`);
-  newWin.print();
-  newWin.close();
+  const wnd = window.open("", "_blank");
 
-  setTimeout(() => location.reload(), 1000);
+  wnd.document.open();
+  wnd.document.write(`<pre style="font-family: monospace; font-size:12px;">${strukContent}</pre>`);
+  wnd.document.close();
+
+  wnd.onload = () => {
+    wnd.focus();
+    wnd.print();
+
+    // Auto-close agar hemat tab
+    setTimeout(() => {
+      wnd.close();
+      location.reload();
+    }, 800);
+  };
 }
 
 let deferredPrompt;
@@ -548,5 +557,6 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
