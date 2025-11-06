@@ -475,49 +475,50 @@ async function kirimData() {
 }
 function printPage() {
   const btnPrint = document.getElementById("btnPrint");
-
   if (btnPrint.disabled) {
-    alert("⚠️ KIRIM DATA TERLEBIH DAHULU!");
+    alert("⚠️ KIRIM DATA TERLEBIH DAHULU! ✅");
     return;
   }
 
-  const printView = document.querySelector(".print-view");
-  printView.style.display = "block"; // ✅ Penting! Biar angka bisa masuk sebelum print
+  const total = Number(document.getElementById("jumlah_bayar").dataset.raw || 0);
+  const biaya = Number(document.getElementById("biaya_meter").value || 0);
+  const beban = Number(document.getElementById("beban_wajib").value || 0);
+  const denda = Number(document.getElementById("denda").value || 0);
 
-  const totalRaw = document.getElementById("jumlah_bayar").dataset.raw || "0";
-  const biayaRaw = document.getElementById("biaya_meter").value || "0";
-  const bebanRaw = document.getElementById("beban_wajib").value || "0";
-  const dendaRaw = document.getElementById("denda").value || "0";
+  const struk =
+`PAMSIMAS TIRTA MAKMUR
+-------------------------------
+BUKTI PEMBAYARAN AIR
 
-  document.getElementById("cetak_tanggal").innerText = document.getElementById("tanggal_input").value;
-  document.getElementById("cetak_id").innerText = document.getElementById("id_pelanggan").value;
-  document.getElementById("cetak_nama").innerText = document.getElementById("nama").value;
-  document.getElementById("cetak_alamat").innerText = document.getElementById("alamat").value;
-  document.getElementById("cetak_awal").innerText = document.getElementById("meter_awal").value;
-  document.getElementById("cetak_akhir").innerText = document.getElementById("meter_akhir").value;
-  document.getElementById("cetak_meter").innerText = document.getElementById("jumlah_meter").value;
+Tanggal    : ${document.getElementById("tanggal_input").value}
+ID         : ${document.getElementById("id_pelanggan").value}
+Nama       : ${document.getElementById("nama").value}
+Alamat     : ${document.getElementById("alamat").value}
 
-  document.getElementById("cetak_biaya").innerText = Number(biayaRaw).toLocaleString("id-ID");
-  document.getElementById("cetak_beban").innerText = Number(bebanRaw).toLocaleString("id-ID");
-  document.getElementById("cetak_denda").innerText = Number(dendaRaw).toLocaleString("id-ID");
-  document.getElementById("cetak_total").innerText = Number(totalRaw).toLocaleString("id-ID");
+Meter Awal : ${document.getElementById("meter_awal").value}
+Meter Akhir: ${document.getElementById("meter_akhir").value}
+Pemakaian  : ${document.getElementById("jumlah_meter").value} m³
 
-  document.getElementById("cetak_pelunasan").innerText = document.getElementById("pelunasan").value;
+Biaya Meter: Rp ${biaya.toLocaleString("id-ID")}
+Abonemen   : Rp ${beban.toLocaleString("id-ID")}
+Denda      : Rp ${denda.toLocaleString("id-ID")}
 
-  // Sembunyikan tombol
-  document.getElementById("btnKirim").style.display = "none";
-  document.getElementById("btnPrint").style.display = "none";
-  document.getElementById("installBtn").style.display = "none";
+TOTAL BAYAR: Rp ${total.toLocaleString("id-ID")}
+Pelunasan  : ${document.getElementById("pelunasan").value}
 
-  setTimeout(() => {
-    window.print();
+--------------------------------
+!!!!! MATUR NUWUN !!!!!
+Desa Kuto Jawara
+Pembayaran tgl 20 ke atas
+dikenakan Denda
+`;
 
-    // ✅ Setelah print, sembunyikan kembali dan reload
-    setTimeout(() => {
-      printView.style.display = "none";
-      location.reload();
-    }, 800);
-  }, 300); // ✅ Delay kecil agar angka sudah terisi semua
+  const newWin = window.open("", "_blank");
+  newWin.document.write(`<pre style="font-family: monospace">${struk}</pre>`);
+  newWin.print();
+  newWin.close();
+
+  setTimeout(() => location.reload(), 1000);
 }
 
 let deferredPrompt;
@@ -547,4 +548,5 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
