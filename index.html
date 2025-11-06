@@ -252,7 +252,7 @@
       <option value="Sudah">SUDAH</option>
     </select>
 
-    <label for="foto_meteran">Upload Foto Meteran</label>
+    <label for="foto_meteran">FOTO METER AIR</label>
     <input type="file" id="foto_meteran" accept="image/*" capture="environment" />
 
     <button id="btnKirim" onclick="kirimData()">KIRIM</button>
@@ -268,7 +268,7 @@
     </div>
   </div>
   
-<div class="loading" id="loadingText">⏳ Sedang mengirim data...</div>
+<div class="loading" id="loadingText">⏳ mengirim data...</div>
   
 <script>
     // 🔐 Cek Login
@@ -436,7 +436,7 @@ async function kirimData() {
     const result = await res.json();
 
     if (result.status === "ok") {
-      alert("✅ Sukses!\nLanjut CETAK.");
+      alert("✅ SUKSES! ✅\n👇👇👇\nLANJUT CETAK.");
       // Aktifkan tombol cetak setelah data berhasil dikirim
       const btnPrint = document.getElementById("btnPrint");
       btnPrint.disabled = false;
@@ -507,25 +507,26 @@ function printPage() {
     ""
   ];
 
-
   const textToPrint = lines.join("\n");
 
   // 🟢 METODE 1: RawBT (Android) - langsung cetak tanpa preview jika RawBT terpasang
   // RawBT expects a URL like: rawbt://print?text=... (text should be URL-encoded)
-  try {
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = "rawbt://print?text=" + encodeURIComponent(textToPrint);
-    document.body.appendChild(iframe);
+ try {
+    const rawbtHref = "rawbt://print?text=" + encodeURIComponent(textToPrint);
+    // create temporary link and click to invoke RawBT
+    const a = document.createElement("a");
+    a.href = rawbtHref;
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-      location.reload();
-    }, 2000);
-
-    return;
+    // Setelah memanggil RawBT, kita reload singkat untuk menjaga UI
+    setTimeout(() => location.reload(), 1000);
+    return; // berhenti di sini (sukses memanggil RawBT)
   } catch (e) {
-    console.warn("RawBT error:", e);
+    console.warn("RawBT call failed, falling back to print:", e);
+    // lanjut ke fallback
   }
 
   // 🔁 METODE 2 (Fallback): Buka jendela baru dan print (masih bisa memunculkan preview)
@@ -599,6 +600,7 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
 
