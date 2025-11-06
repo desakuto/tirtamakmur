@@ -255,8 +255,8 @@
 
     <label>Pelunasan</label>
     <select id="pelunasan">
-      <option value="Belum">Belum</option>
-      <option value="Sudah">Sudah</option>
+      <option value="Belum">BELUM</option>
+      <option value="Sudah">SUDAH</option>
     </select>
 
     <label for="foto_meteran">Upload Foto Meteran</label>
@@ -488,31 +488,32 @@ function printPage() {
 
   // Siapkan isi struk sebagai text biasa (monospace)
   const lines = [
-    "     PAMSIMAS TIRTA MAKMUR",
-    "-------------------------------",
-    "BUKTI PEMBAYARAN AIR",
+    "💧 PAMSIMAS TIRTA MAKMUR 💧",
+    "     DESA KUTO - JAWARA",
+    "--------------------------------",
+    "     BUKTI PEMBAYARAN AIR",
     "",
     `Tanggal    : ${document.getElementById("tanggal_input").value}`,
     `ID         : ${document.getElementById("id_pelanggan").value}`,
     `Nama       : ${document.getElementById("nama").value}`,
     `Alamat     : ${document.getElementById("alamat").value}`,
-    "",
     `Meter Awal : ${document.getElementById("meter_awal").value}`,
     `Meter Akhir: ${document.getElementById("meter_akhir").value}`,
     `Pemakaian  : ${document.getElementById("jumlah_meter").value} m³`,
-    "",
     `Biaya Meter: Rp ${biaya.toLocaleString("id-ID")}`,
     `Abonemen   : Rp ${beban.toLocaleString("id-ID")}`,
     `Denda      : Rp ${denda.toLocaleString("id-ID")}`,
     "",
     `TOTAL BAYAR: Rp ${total.toLocaleString("id-ID")}`,
-    `Pelunasan  : ${document.getElementById("pelunasan").value}`,
+    `STATUS     : ${document.getElementById("pelunasan").value}`,
     "",
     "--------------------------------",
     "!!!!! SUWUN NGGIH LURRR !!!!!",
-    "Pembayaran tgl 20< dikenakan Denda",
+    "  Pembayaran tgl 20 ke atas",
+    "  dikenakan Denda lho bro ☺",
     ""
   ];
+
 
   const textToPrint = lines.join("\n");
 
@@ -607,6 +608,7 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
 
