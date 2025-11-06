@@ -84,7 +84,7 @@
 
     #jumlah_bayar {
       color: red;
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 900;
       text-align: center;
     }
@@ -137,11 +137,11 @@
     line-height: 1.1 !important; /* ✅ Jarak mepet */
   }
 
- .container {
-    width: 100%;
-    max-width: 390px; /* Pas layar HP */
-    padding: 12px;
-    box-sizing: border-box;
+ .container, body {
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    width: 58mm !important; /* ✅ Ukuran struk thermal */
   }
 
   input, select, button, label, #info_tarif, #foto_meteran {
@@ -600,6 +600,7 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
 
