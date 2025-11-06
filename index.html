@@ -73,9 +73,17 @@
     #nama { color: #3137fd; font-weight: 700; }
     input::placeholder { font-style: italic; }
 
-   h2, .judul {
-    font-size: 18px;
-   }
+  .judul {
+      font-weight: 700;
+      text-align: center;
+      font-size: 22px;
+      background: linear-gradient(120deg,#2196F3,#55A630,#9E9E9E,#2196F3);
+      background-size: 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s infinite linear;
+    }
+    
     @keyframes shimmer {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
@@ -128,9 +136,7 @@
 
 
     /* 🖨️ Tampilan Struk Cetak */
-  
-@media print {
-
+  @media print {
   * {
     font-family: monospace !important; /* ✅ Font A */
     font-size: 11px !important;
@@ -154,14 +160,7 @@
 }
 
       /* 📱 Thermal Printer 57mm */
-     @media (max-width: 480px) {
-  html, body {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-  }
-@media (max-width: 480px) {
+   @media (max-width: 480px) {
         @page { size: 57mm 40mm; margin: 2mm; }
         body { font-size: 10px !important; }
         .container { max-width: 57mm; padding: 4px; }
@@ -606,3 +605,4 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
