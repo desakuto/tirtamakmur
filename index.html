@@ -502,7 +502,7 @@ function printPage() {
     `Abonemen   : Rp ${beban.toLocaleString("id-ID")}`,
     `Denda      : Rp ${denda.toLocaleString("id-ID")}`,
     "",
-    ESC_BOLD_ON + `TOTAL BAYAR: Rp ${total.toLocaleString("id-ID")}` + ESC_BOLD_OFF,
+    `TOTAL BAYAR: Rp ${total.toLocaleString("id-ID")}`,
     `STATUS     : ${document.getElementById("pelunasan").value}`,
     "",
     "--------------------------------",
@@ -605,4 +605,5 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
