@@ -473,17 +473,22 @@ async function kirimData() {
   localStorage.removeItem("login_time");
   window.location.href = "login.html";
 }
-   function printPage() {
- const btnPrint = document.getElementById("btnPrint");
-  // Cegah jika belum diaktifkan oleh kirimData()
+  function printPage() {
+  const btnPrint = document.getElementById("btnPrint");
+
+  // Jika belum diizinkan (belum KIRIM)
   if (btnPrint.disabled) {
     alert("⚠️ KIRIM DATA TERLEBIH DAHULU\nSilakan tekan tombol 'KIRIM' sebelum mencetak.");
     return;
   }
- // Sembunyikan tombol saat cetak
-  document.getElementById("btnKirim").style.display = "none";
-  document.getElementById("installBtn").style.display = "none";
-  document.getElementById("btnPrint").style.display = "none";
+
+  // Ambil angka dalam format RAW untuk cetak
+  const totalRaw = document.getElementById("jumlah_bayar").dataset.raw || "0";
+  const biayaRaw = document.getElementById("biaya_meter").value || "0";
+  const bebanRaw = document.getElementById("beban_wajib").value || "0";
+  const dendaRaw = document.getElementById("denda").value || "0";
+
+  // Set semua data ke elemen cetak
   document.getElementById("cetak_tanggal").innerText = document.getElementById("tanggal_input").value;
   document.getElementById("cetak_id").innerText = document.getElementById("id_pelanggan").value;
   document.getElementById("cetak_nama").innerText = document.getElementById("nama").value;
@@ -491,19 +496,29 @@ async function kirimData() {
   document.getElementById("cetak_awal").innerText = document.getElementById("meter_awal").value;
   document.getElementById("cetak_akhir").innerText = document.getElementById("meter_akhir").value;
   document.getElementById("cetak_meter").innerText = document.getElementById("jumlah_meter").value;
-  document.getElementById("cetak_biaya").innerText = document.getElementById("biaya_meter").value;
-document.getElementById("cetak_beban").innerText = document.getElementById("beban_wajib").value;
-document.getElementById("cetak_denda").innerText = document.getElementById("denda").value;
-  document.getElementById("cetak_total").innerText = document.getElementById("jumlah_bayar").value;
+
+  // Format angka dengan aman untuk thermal printer
+  document.getElementById("cetak_biaya").innerText = Number(biayaRaw).toLocaleString("id-ID");
+  document.getElementById("cetak_beban").innerText = Number(bebanRaw).toLocaleString("id-ID");
+  document.getElementById("cetak_denda").innerText = Number(dendaRaw).toLocaleString("id-ID");
+  document.getElementById("cetak_total").innerText = Number(totalRaw).toLocaleString("id-ID");
+
   document.getElementById("cetak_pelunasan").innerText = document.getElementById("pelunasan").value;
-window.print();
 
+  // Sembunyikan tombol saat cetak
+  document.getElementById("btnKirim").style.display = "none";
+  document.getElementById("installBtn").style.display = "none";
+  document.getElementById("btnPrint").style.display = "none";
 
-  // Reload otomatis setelah cetak selesai
+  // CETAK
+  window.print();
+
+  // Reload otomatis setelah print selesai
   setTimeout(() => {
     location.reload();
   }, 1000);
 }
+
 let deferredPrompt;
 const installBtn = document.getElementById("installBtn");
 
