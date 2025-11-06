@@ -161,7 +161,13 @@
     padding: 0;
     overflow-x: hidden;
   }
-
+@media (max-width: 480px) {
+        @page { size: 57mm 40mm; margin: 2mm; }
+        body { font-size: 10px !important; }
+        .container { max-width: 57mm; padding: 4px; }
+        label { font-size: 10px !important; margin-top: 4px; }
+        #jumlah_bayar { font-size: 14px !important; }
+      }
       /* 💻 PC (A4) */
       @media (min-width: 481px) {
         @page { size: A4; margin: 15mm; }
@@ -600,11 +606,3 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
