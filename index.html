@@ -478,13 +478,12 @@ function printPage() {
     return;
   }
 
-  // Ambil angka/field raw (pakai dataset.raw untuk total)
+  // Ambil angka/field raw
   const total = Number(document.getElementById("jumlah_bayar").dataset.raw || 0);
   const biaya = Number(document.getElementById("biaya_meter").value || 0);
   const beban = Number(document.getElementById("beban_wajib").value || 0);
   const denda = Number(document.getElementById("denda").value || 0);
 
-  // Siapkan isi struk sebagai text biasa (monospace)
   const lines = [
     "    PAMSIMAS TIRTA MAKMUR",
     "      DESA KUTO - JAWARA",
@@ -513,33 +512,15 @@ function printPage() {
   ];
 
   const textToPrint = lines.join("\n");
+  const rawbtURL = `rawbt://print?text=${encodeURIComponent(textToPrint)}`;
 
-  // 🟢 METODE 1: RawBT (Android) - langsung cetak tanpa preview jika RawBT terpasang
-  // RawBT expects a URL like: rawbt://print?text=... (text should be URL-encoded)
- try {
-    const rawbtHref = "rawbt://print?text=" + encodeURIComponent(textToPrint);
-    // create temporary link and click to invoke RawBT
-    const a = document.createElement("a");
-    a.href = rawbtHref;
-    a.style.display = "none";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    // Setelah memanggil RawBT, kita reload singkat untuk menjaga UI
-    setTimeout(() => location.reload(), 1000);
-    return; // berhenti di sini (sukses memanggil RawBT)
-  } catch (e) {
-    console.warn("RawBT call failed, falling back to print:", e);
-    // lanjut ke fallback
-  }
-
-  // 🔁 METODE 2 (Fallback): Buka jendela baru dan print (masih bisa memunculkan preview)
-  const wnd = window.open("", "_blank", "width=400,height=600");
-  if (!wnd) {
-    alert("❌ Gagal membuka jendela cetak. Pastikan pop-up tidak diblokir.");
-    return;
-  }
+  // ✅ Panggilan langsung dari aksi klik user
+  const a = document.createElement("a");
+  a.href = rawbtURL;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
 
   const html = `
     <html>
@@ -605,5 +586,6 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
