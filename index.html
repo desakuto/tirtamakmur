@@ -73,16 +73,9 @@
     #nama { color: #3137fd; font-weight: 700; }
     input::placeholder { font-style: italic; }
 
-    .judul {
-      font-weight: 700;
-      text-align: center;
-      font-size: 22px;
-      background: linear-gradient(120deg,#2196F3,#55A630,#9E9E9E,#2196F3);
-      background-size: 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shimmer 3s infinite linear;
-    }
+   h2, .judul {
+    font-size: 18px;
+   }
     @keyframes shimmer {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
@@ -91,7 +84,7 @@
 
     #jumlah_bayar {
       color: red;
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 900;
       text-align: center;
     }
@@ -144,11 +137,11 @@
     line-height: 1.1 !important; /* ✅ Jarak mepet */
   }
 
-  .container, body {
-    padding: 0 !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-    width: 58mm !important; /* ✅ Ukuran struk thermal */
+ .container {
+    width: 100%;
+    max-width: 390px; /* Pas layar HP */
+    padding: 12px;
+    box-sizing: border-box;
   }
 
   input, select, button, label, #info_tarif, #foto_meteran {
@@ -161,13 +154,13 @@
 }
 
       /* 📱 Thermal Printer 57mm */
-      @media (max-width: 480px) {
-        @page { size: 57mm 40mm; margin: 2mm; }
-        body { font-size: 10px !important; }
-        .container { max-width: 57mm; padding: 4px; }
-        label { font-size: 10px !important; margin-top: 4px; }
-        #jumlah_bayar { font-size: 14px !important; }
-      }
+     @media (max-width: 480px) {
+  html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
 
       /* 💻 PC (A4) */
       @media (min-width: 481px) {
@@ -488,8 +481,8 @@ function printPage() {
 
   // Siapkan isi struk sebagai text biasa (monospace)
   const lines = [
-    "💧 PAMSIMAS TIRTA MAKMUR 💧",
-    "     DESA KUTO - JAWARA",
+    "    PAMSIMAS TIRTA MAKMUR",
+    "      DESA KUTO - JAWARA",
     "--------------------------------",
     "     BUKTI PEMBAYARAN AIR",
     "",
@@ -499,18 +492,18 @@ function printPage() {
     `Alamat     : ${document.getElementById("alamat").value}`,
     `Meter Awal : ${document.getElementById("meter_awal").value}`,
     `Meter Akhir: ${document.getElementById("meter_akhir").value}`,
-    `Pemakaian  : ${document.getElementById("jumlah_meter").value} m³`,
+    `Pemakaian  : ${document.getElementById("jumlah_meter").value} m3`,
     `Biaya Meter: Rp ${biaya.toLocaleString("id-ID")}`,
     `Abonemen   : Rp ${beban.toLocaleString("id-ID")}`,
     `Denda      : Rp ${denda.toLocaleString("id-ID")}`,
     "",
-    `TOTAL BAYAR: Rp ${total.toLocaleString("id-ID")}`,
+    ESC_BOLD_ON + `TOTAL BAYAR: Rp ${total.toLocaleString("id-ID")}` + ESC_BOLD_OFF,
     `STATUS     : ${document.getElementById("pelunasan").value}`,
     "",
     "--------------------------------",
     "!!!!! SUWUN NGGIH LURRR !!!!!",
-    "  Pembayaran tgl 20 ke atas",
-    "  dikenakan Denda lho bro ☺",
+    "        Bayar tgl 20<",
+    "    dikenakan DENDA ya lur",
     ""
   ];
 
@@ -520,21 +513,19 @@ function printPage() {
   // 🟢 METODE 1: RawBT (Android) - langsung cetak tanpa preview jika RawBT terpasang
   // RawBT expects a URL like: rawbt://print?text=... (text should be URL-encoded)
   try {
-    const rawbtHref = "rawbt://print?text=" + encodeURIComponent(textToPrint);
-    // create temporary link and click to invoke RawBT
-    const a = document.createElement("a");
-    a.href = rawbtHref;
-    a.style.display = "none";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = "rawbt://print?text=" + encodeURIComponent(textToPrint);
+    document.body.appendChild(iframe);
 
-    // Setelah memanggil RawBT, kita reload singkat untuk menjaga UI
-    setTimeout(() => location.reload(), 1000);
-    return; // berhenti di sini (sukses memanggil RawBT)
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+      location.reload();
+    }, 2000);
+
+    return;
   } catch (e) {
-    console.warn("RawBT call failed, falling back to print:", e);
-    // lanjut ke fallback
+    console.warn("RawBT error:", e);
   }
 
   // 🔁 METODE 2 (Fallback): Buka jendela baru dan print (masih bisa memunculkan preview)
@@ -608,6 +599,7 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
 
