@@ -512,14 +512,20 @@ function printPage() {
   ];
 
   const textToPrint = lines.join("\n");
-  const rawbtURL = `rawbt://print?text=${encodeURIComponent(textToPrint)}`;
+ try {
+  const iframe = document.createElement("iframe");
+  iframe.style.display = "none";
+  iframe.src = "rawbt://print?text=" + encodeURIComponent(textToPrint);
+  document.body.appendChild(iframe);
 
-  // ✅ Panggilan langsung dari aksi klik user
-  const a = document.createElement("a");
-  a.href = rawbtURL;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  setTimeout(() => {
+    document.body.removeChild(iframe);
+    location.reload();
+  }, 1500);
+
+  return;
+} catch (e) {
+  console.warn("RawBT gagal, fallback print:", e);
 }
 
   const html = `
@@ -586,6 +592,7 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
 
