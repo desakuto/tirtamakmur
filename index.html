@@ -306,6 +306,11 @@ button {
 <div class="loading" id="loadingText">⏳ mengirim data... ⏳</div>
   
 <script>
+  // 🔒 Kunci tombol BACK Android dari kembali ke halaman login
+history.pushState(null, "", location.href);
+window.addEventListener("popstate", function () {
+  history.pushState(null, "", location.href);
+});
     // 🔐 Cek Login
     if (localStorage.getItem("logged_in") !== "true") {
     window.location.href = "login.html";
@@ -582,6 +587,7 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
 
