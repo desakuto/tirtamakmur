@@ -194,7 +194,7 @@ button {
         body { font-size: 10px !important; }
         .container { max-width: 57mm; padding: 4px; }
         label { font-size: 10px !important; margin-top: 4px; }
-        #jumlah_bayar { font-size: 14px !important; }
+        #jumlah_bayar { font-size: 18px !important; }
       }
 
       /* 💻 PC (A4) */
@@ -472,8 +472,11 @@ async function kirimData() {
 
     if (result.status === "ok") {
       alert("   ✅ TERKIRIM !✅\n👇👇👇\nCETAK >>> Emulator.");
-      // Aktifkan tombol cetak setelah data berhasil dikirim
-
+    // ✅ Aktifkan tombol cetak setelah data berhasil terkirim
+    const btnPrint = document.getElementById("btnPrint");
+    btnPrint.disabled = false;
+    btnPrint.style.opacity = "1";
+    btnPrint.style.cursor = "pointer";
     } else {
       alert("❌ Gagal mengirim data!");
     }
@@ -579,6 +582,7 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
 
