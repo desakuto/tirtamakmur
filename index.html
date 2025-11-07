@@ -92,7 +92,7 @@
 
     #jumlah_bayar {
       color: red;
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 900;
       text-align: center;
     }
@@ -473,11 +473,6 @@ async function kirimData() {
     if (result.status === "ok") {
       alert("   ✅ TERKIRIM !✅\n👇👇👇\nCETAK >>> Emulator.");
       // Aktifkan tombol cetak setelah data berhasil dikirim
-     // Awal halaman: tombol CETAK dikunci total
-const btnPrint = document.getElementById("btnPrint");
-btnPrint.disabled = true;
-btnPrint.style.opacity = "0.4";
-btnPrint.style.cursor = "not-allowed";
 
     } else {
       alert("❌ Gagal mengirim data!");
@@ -539,8 +534,7 @@ Biaya Meter: Rp ${biaya.toLocaleString("id-ID")}
 Abonemen   : Rp ${beban.toLocaleString("id-ID")}
 Denda      : Rp ${denda.toLocaleString("id-ID")}
 
->>> TOTAL BAYAR: Rp ${totalRaw.toLocaleString("id-ID")} <<<
-
+TOTAL BAYAR: Rp ${totalRaw.toLocaleString("id-ID")}
 Status : ${pelunasan}
 --------------------------------
 🌫🌫🌫 MATUR SUWUN LURRR 🌫🌫🌫
@@ -585,6 +579,7 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
 
