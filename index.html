@@ -7,7 +7,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon-192.png"><link rel="icon" href="icons/icon-192.png">
 
-  <style>
+<style>
   html, body {
   width: 100%;
   height: 100%;
@@ -16,7 +16,7 @@
   overflow-x: hidden;
   background: #ffffff;
   font-family: sans-serif;
-}
+	}
 
 /* Agar container tidak lebih lebar dari layar */
 .container {
@@ -48,26 +48,39 @@
     }
     button:hover { background: #4c952b; }
 
-    .loading {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,0.7);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    color: #3b6a7e;
-    font-weight: 700;
-    text-align: center;
-  }
-
+   .loading {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(6px); /* ✅ Efek blur */
+  -webkit-backdrop-filter: blur(6px); /* ✅ Support Android 👍 */
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  font-size: 22px;
+  color: #2c3e50;
+  font-weight: 800;
+  text-align: center;
+}
    .loading.show {
     display: flex;
   }
+.loading::before {
+  content: "⏳";
+  font-size: 38px;
+  margin-bottom: 10px;
+  animation: spin 1.1s linear infinite;
+  display: block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
     #installBtn { display:none; margin-top:10px; background:#06b6d4; }
 
@@ -134,11 +147,8 @@
   background: #c02424 !important;
   }
 
-
     /* 🖨️ Tampilan Struk Cetak */
-  
-@media print {
-
+  @media print {
   * {
     font-family: monospace !important; /* ✅ Font A */
     font-size: 11px !important;
@@ -160,48 +170,84 @@
     display: block !important; /* ✅ Hanya muncul saat print */
   }
 }
-/* 🔥 Perbesar font tampilan */
+/* 🔥 Perbesar tampilan default */
 body, input, select, button {
-  font-size: 17px; /* default lebih besar */
+  font-size: 18px !important;
 }
 
-/* Judul lebih mencolok */
+/* Judul besar dan tebal */
 .judul {
-  font-size: 26px !important;
+  font-size: 30px !important;
 }
 
 /* Label lebih jelas */
 label {
-  font-size: 16px !important;
+  font-size: 18px !important;
   font-weight: 700;
 }
 
-/* Input angka total lebih besar */
-#jumlah_bayar {
-  font-size: 32px !important;
-  font-weight: 900 !important;
+/* Input & tombol lebih besar */
+input, select {
+  padding: 16px !important;
+  font-size: 20px !important;
+  border-radius: 10px;
 }
 
-/* Tombol lebih mudah ditekan */
 button {
-  font-size: 18px !important;
-  padding: 14px !important;
+  font-size: 20px !important;
+  padding: 18px !important;
+  border-radius: 10px;
 }
 
-      /* 📱 Thermal Printer 57mm */
-      @media (max-width: 480px) {
-        @page { size: 57mm 40mm; margin: 2mm; }
-        body { font-size: 10px !important; }
-        .container { max-width: 57mm; padding: 4px; }
-        label { font-size: 10px !important; margin-top: 4px; }
-        #jumlah_bayar { font-size: 18px !important; }
-      }
+/* 👍 Total Bayar menonjol */
+#jumlah_bayar {
+  font-size: 38px !important;
+  font-weight: 900 !important;
+  color: red !important;
+  text-align: center;
+}
+/* Animasi Logout */
+.loading-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(3px);
+  z-index: 999999; /* ⬅️ lebih tinggi dari loading kirim */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 
-      /* 💻 PC (A4) */
-      @media (min-width: 481px) {
-        @page { size: A4; margin: 15mm; }
-      }
-    }
+.spinner {
+  border: 4px solid #d9ecff;
+  border-top: 4px solid #0061c9;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg) }
+  to { transform: rotate(360deg) }
+}
+/* ✅ Agar tampilan cocok dengan HP */
+@media (max-width: 480px) {
+  .container {
+    max-width: 100% !important;
+    padding: 12px !important;
+  }
+
+  img.logo-pamsimas {
+    width: 160px !important;
+    margin-top: 8px;
+  }
+
+  .print-header h3 {
+    font-size: 22px !important;
+  }
+}
   </style>
 </head>
 
@@ -214,8 +260,24 @@ button {
        <h3><strong>PAMSIMAS TIRTA MAKMUR</strong></h3>
        </div>
 
+    <div style="display: flex; gap: 10px; align-items: center;">
+  <div style="flex: 1;">
     <label>Tanggal</label>
     <input type="text" id="tanggal_input" readonly />
+  </div>
+  <div style="flex: 1;">
+    <label>Jam</label>
+    <input type="text" id="jam_input" readonly />
+  </div>
+ </div>
+
+	<label for="foto_meteran">FOTO METER AIR</label>
+	<div style="text-align:center;">
+  	<img id="previewMeteran" 
+       src="" 
+       style="width:100%; max-height:200px; object-fit:contain; display:none; border:1px solid #ccc; border-radius:8px; margin-bottom:6px;" />
+       </div>
+	<input type="file" id="foto_meteran" accept="image/*" capture="environment" onchange="previewFoto()" />
 
     <label style="color: #008ecc; font-weight: 700;">ID Pelanggan (3 digit)</label>
     <input type="text" id="id_pelanggan" placeholder="Masukkan ID Pelanggan" inputmode="numeric" maxlength="3" oninput="handleIdInput()" />
@@ -283,12 +345,9 @@ button {
 
     <label>Pelunasan</label>
     <select id="pelunasan">
-      <option value="Belum">Belum</option>
-      <option value="Sudah">Sudah</option>
+      <option value="Belum">BELUM</option>
+      <option value="Sudah">SUDAH</option>
     </select>
-
-    <label for="foto_meteran">Upload Foto Meteran</label>
-    <input type="file" id="foto_meteran" accept="image/*" capture="environment" />
 
     <button id="btnKirim" onclick="kirimData()">➤ KIRIM</button>
     <button id="btnPrint" onclick="printPage()">🖨️ CETAK</button>
@@ -303,9 +362,28 @@ button {
     </div>
   </div>
   
-<div class="loading" id="loadingText">⏳ mengirim data... ⏳</div>
+<div class="loading" id="loadingText"> mengirim data...</div>
   
 <script>
+
+function previewFoto() {
+  const file = document.getElementById("foto_meteran").files[0];
+  const preview = document.getElementById("previewMeteran");
+
+  if (!file) {
+    preview.style.display = "none";
+    preview.src = "";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    preview.src = reader.result;
+    preview.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
   // 🔒 Kunci tombol BACK Android dari kembali ke halaman login
 history.pushState(null, "", location.href);
 window.addEventListener("popstate", function () {
@@ -335,8 +413,20 @@ function checkAutoLogout() {
   }
 }
 
-// 🔄 Periksa setiap 10 detik
-setInterval(checkAutoLogout, 10000);
+document.addEventListener("DOMContentLoaded", () => {
+  const jamInput = document.getElementById("jam_input");
+
+  function updateJam() {
+    const now = new Date();
+    const jam = now.getHours().toString().padStart(2, "0");
+    const menit = now.getMinutes().toString().padStart(2, "0");
+    if (jamInput) jamInput.value = `${jam}:${menit}`;
+  }
+
+  updateJam(); // tampil langsung
+  setInterval(updateJam, 60000); // update tiap menit
+});
+
 
 // 🔄 Reset timer jika ada aktivitas user
 function resetTimer() {
@@ -501,11 +591,20 @@ async function kirimData() {
         reader.onerror = (error) => reject(error);
       });
     }
-   function logout() {
-  localStorage.removeItem("logged_in");
-  localStorage.removeItem("login_time");
-  window.location.href = "login.html";
+
+  function logout() {
+  const loading = document.getElementById("loadingText");
+  loading.innerText = "Keluar sik Bro...";
+  loading.classList.add("show");
+
+  setTimeout(() => {
+    loading.classList.remove("show");
+    localStorage.removeItem("logged_in");
+    localStorage.removeItem("login_time");
+    window.location.href = "login.html";
+  }, 1500);
 }
+
   function printPage() {
   const btnPrint = document.getElementById("btnPrint");
   if (btnPrint.disabled) {
@@ -515,6 +614,7 @@ async function kirimData() {
 
   // Ambil semua nilai untuk cetak
   const tanggal = document.getElementById("tanggal_input").value;
+  const jam = document.getElementById("jam_input").value;
   const id = document.getElementById("id_pelanggan").value;
   const nama = document.getElementById("nama").value;
   const alamat = document.getElementById("alamat").value;
@@ -529,9 +629,11 @@ async function kirimData() {
 
   const struk =
 `       
-❄ PAMSIMAS TIRTA MAKMUR ❄
+     
+ 
+    PAMSIMAS TIRTA MAKMUR
 --------------------------------
-Tanggal    : ${tanggal}
+Tanggal    : ${tanggal} - ${jam}
 ID         : ${id}
 Nama       : ${nama}
 Alamat     : ${alamat}
@@ -545,8 +647,8 @@ Denda      : Rp ${denda.toLocaleString("id-ID")}
 TOTAL BAYAR: Rp ${totalRaw.toLocaleString("id-ID")}
 Status : ${pelunasan}
 --------------------------------
-🌫🌫🌫 MATUR SUWUN LURRR 🌫🌫🌫
-Bayar lewat tgl 20 kena denda
+  !!! MATUR SUWUN LURRR !!!
+Bayar lewat tgl 20 kena Denda
 `;
 
   // ✅ Cetak langsung via RawBT — TANPA PREVIEW
@@ -584,12 +686,7 @@ installBtn.addEventListener("click", async () => {
   navigator.serviceWorker.register('./service-worker.js')
     .then(() => console.log("✅ Service Worker aktif"));
 }
-  </script>
+</script>
+
 </body>
 </html>
-
-
-
-
-
-
