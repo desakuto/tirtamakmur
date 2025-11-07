@@ -479,13 +479,6 @@ btnPrint.disabled = true;
 btnPrint.style.opacity = "0.4";
 btnPrint.style.cursor = "not-allowed";
 
-// Blokir klik paksa sebelum kirim berhasil
-btnPrint.addEventListener("click", function(e) {
-  if (btnPrint.disabled) {
-    e.preventDefault();
-    alert("⚠️ KIRIM DATA TERLEBIH DAHULU!");
-  }
-});
     } else {
       alert("❌ Gagal mengirim data!");
     }
@@ -592,5 +585,6 @@ installBtn.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
 
 
